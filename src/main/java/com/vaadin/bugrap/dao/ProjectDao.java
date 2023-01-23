@@ -3,6 +3,7 @@ package com.vaadin.bugrap.dao;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.vaadin.bugrap.domain.entities.Project;
 import org.vaadin.bugrap.domain.spring.ProjectRepository;
 
 
@@ -10,12 +11,14 @@ import org.vaadin.bugrap.domain.spring.ProjectRepository;
 public class ProjectDao {
 
 	private ProjectRepository projectRepository;
+	private List<Project> allProjectsList;
 	
 	public ProjectDao(ProjectRepository projectRepository) {
 		this.projectRepository = projectRepository;
 	}
 	
 	public List<String> getAllProjectNames() {
-		return this.projectRepository.findAll().stream().map(p->p.getName()).toList();
+		allProjectsList = this.projectRepository.findAll();
+		return allProjectsList.stream().map(p->p.getName()).toList();
 	}
 }

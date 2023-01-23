@@ -1,6 +1,10 @@
 package com.vaadin.bugrap.views;
 
+import org.vaadin.addons.searchbox.SearchBox;
+import org.vaadin.bugrap.domain.entities.Project;
+
 import com.vaadin.bugrap.dao.ProjectDao;
+import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
@@ -14,9 +18,11 @@ import com.vaadin.flow.router.Route;
 public class MainLayout extends VerticalLayout {
 
 	private ProjectDao projectDao;
+	private ProjectVersionDao projectVersionDao;
 	
-	public MainLayout(ProjectDao projectDao) {
-		this.projectDao = projectDao;		
+	public MainLayout(ProjectDao projectDao,ProjectVersionDao projectVersionDao) {
+		this.projectDao = projectDao;	
+		this.projectVersionDao = projectVersionDao;
 		addHeader();
 		addBody();
 	}
@@ -50,20 +56,48 @@ public class MainLayout extends VerticalLayout {
 		VerticalLayout verticalBodyLayout = new VerticalLayout();
 		verticalBodyLayout.setHeightFull();
 		verticalBodyLayout.setWidthFull();
-		verticalBodyLayout.getStyle().set("background-color", "#e8e5e5");
-		addFunctionButtons(verticalBodyLayout);
+		verticalBodyLayout.getStyle().set("background-color", "#f0f0f0");
+		
+		addFunctionAndSearch(verticalBodyLayout);		
+		addReportingBlock(verticalBodyLayout);
+		
 		add(verticalBodyLayout);
+	}
+	
+	public void addFunctionAndSearch(VerticalLayout verticalBodyLayout) {
+		addFunctionButtons(verticalBodyLayout);
+		addSearchComponent(verticalBodyLayout);
 	}
 	
 	public void addFunctionButtons(VerticalLayout verticalBodyLayout) {
 		HorizontalLayout functionButtonsLayout = new HorizontalLayout();
 		Button bugButton = new Button("Report a bug",new Icon(VaadinIcon.BUG)); 
+		bugButton.getStyle().set("background-color", "white");
+		bugButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
+		
 		Button failureRequestButton = new Button("Request a failure",new Icon(VaadinIcon.LIGHTBULB)); 
+		failureRequestButton.getStyle().set("background-color", "white");
+		failureRequestButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
+		
+		
 		Button manageProjectButton = new Button("Manage Project",new Icon(VaadinIcon.SUN_O)); 
+		manageProjectButton.getStyle().set("background-color", "white");
+		manageProjectButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
 		
 		functionButtonsLayout.add(bugButton,failureRequestButton,manageProjectButton);
 		verticalBodyLayout.add(functionButtonsLayout);
 		
 		
+	}
+	
+	public void addSearchComponent(VerticalLayout verticalBodyLayout) {
+		SearchBox searchBox = new SearchBox("Search", SearchBox.ButtonPosition.RIGHT);
+	}
+	
+	public void addReportingBlock(VerticalLayout verticalBodyLayout) {
+		Select<String> select = new Select<>();
+		select.setItems(projectVersionDao.getAllProjectVersions(new Project()));
+		//select.setValue(projectDao.getAllProjectNames().get(0));
+		verticalBodyLayout.add(select);
 	}
 }
