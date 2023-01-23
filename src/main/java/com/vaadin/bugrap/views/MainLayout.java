@@ -10,9 +10,9 @@ import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -131,13 +131,18 @@ public class MainLayout extends VerticalLayout {
 		Div assigneeDivText = new Div();
 		assigneeDivText.setText("Assignees");
 		
-		Tab onlyMe = new Tab("Only Me");
-		Tab everyone = new Tab("Everyone");
-		Tabs assigneeTabs = new Tabs(onlyMe, everyone);
-		assigneeTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		/*
+		 * Tab onlyMe = new Tab("Only Me"); Tab everyone = new Tab("Everyone"); Tabs
+		 * assigneeTabs = new Tabs(onlyMe, everyone);
+		 * assigneeTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		 */
+		
+		MenuBar assigneeTabsMenu = new MenuBar();
+		assigneeTabsMenu.addItem("Only Me");
+		assigneeTabsMenu.addItem("Everyone");
 		
 
-		assigneeDiv.add(assigneeDivText,assigneeTabs);
+		assigneeDiv.add(assigneeDivText,assigneeTabsMenu);
 		
 		Div statusDiv = new Div();
 		statusDiv.getStyle().set("display", "flex");
@@ -146,15 +151,20 @@ public class MainLayout extends VerticalLayout {
 		Div statusDivText = new Div();
 		statusDivText.setText("Status");
 		
-		Tab open = new Tab("Open");
-		Tab allKinds = new Tab("All kinds");
-		Tab custom = new Tab("Custom...");
-		Tabs statusTabs = new Tabs(open, allKinds,custom);
-		statusTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		/*
+		 * Tab open = new Tab("Open"); Tab allKinds = new Tab("All kinds"); Tab custom =
+		 * new Tab("Custom..."); Tabs statusTabs = new Tabs(open, allKinds,custom);
+		 * statusTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		 */
+		
+		MenuBar statusTabsMenu = new MenuBar();
+		statusTabsMenu.addItem("Open");
+		statusTabsMenu.addItem("All kinds");
+		statusTabsMenu.addItem("Custom...");
 		
 
-		assigneeDiv.add(assigneeDivText,assigneeTabs);
-		statusDiv.add(statusDivText,statusTabs);
+		assigneeDiv.add(assigneeDivText,assigneeTabsMenu);
+		statusDiv.add(statusDivText,statusTabsMenu);
 		filtersLayout.add(assigneeDiv,statusDiv);
 		verticalBodyLayout.add(filtersLayout);
 	}
