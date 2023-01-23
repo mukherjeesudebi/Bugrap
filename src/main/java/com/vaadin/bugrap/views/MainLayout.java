@@ -1,17 +1,24 @@
 package com.vaadin.bugrap.views;
 
+import java.util.List;
+
 import org.vaadin.addons.searchbox.SearchBox;
 import org.vaadin.bugrap.domain.entities.Project;
+import org.vaadin.bugrap.domain.entities.ProjectVersion;
 
 import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.Route;
 
 @Route("")
@@ -19,6 +26,7 @@ public class MainLayout extends VerticalLayout {
 
 	private ProjectDao projectDao;
 	private ProjectVersionDao projectVersionDao;
+	private Select<ProjectVersion> projectVersionsSelect;
 	
 	public MainLayout(ProjectDao projectDao,ProjectVersionDao projectVersionDao) {
 		this.projectDao = projectDao;	
@@ -30,9 +38,11 @@ public class MainLayout extends VerticalLayout {
 	public void addHeader() {
 		HorizontalLayout headerHorizontalLayout = new HorizontalLayout();
 		
-		Select<String> select = new Select<>();
-		select.setItems(projectDao.getAllProjectNames());
-		select.setValue(projectDao.getAllProjectNames().get(0));
+		Select<Project> select = new Select<Project>();
+		select.setItems(projectDao.getAllProjectsList());
+		select.setItemLabelGenerator(Project::getName);
+		select.setValue(projectDao.getAllProjectsList().get(0));
+		select.addValueChangeListener(event -> loadProjectVersions(event.getValue()));
 		headerHorizontalLayout.add(select);
 		
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
@@ -59,7 +69,7 @@ public class MainLayout extends VerticalLayout {
 		verticalBodyLayout.getStyle().set("background-color", "#f0f0f0");
 		
 		addFunctionAndSearch(verticalBodyLayout);		
-		addReportingBlock(verticalBodyLayout);
+		addReportingBlock(verticalBodyLayout,projectDao.getAllProjectsList().get(0));
 		
 		add(verticalBodyLayout);
 	}
@@ -94,10 +104,24 @@ public class MainLayout extends VerticalLayout {
 		SearchBox searchBox = new SearchBox("Search", SearchBox.ButtonPosition.RIGHT);
 	}
 	
-	public void addReportingBlock(VerticalLayout verticalBodyLayout) {
-		Select<String> select = new Select<>();
-		select.setItems(projectVersionDao.getAllProjectVersions(new Project()));
-		//select.setValue(projectDao.getAllProjectNames().get(0));
-		verticalBodyLayout.add(select);
+	public void addReportingBlock(VerticalLayout verticalBodyLayout,Project selectedProject){
+		loadProjectVersions(selectedProject);
+		verticalBodyLayout.add(projectVersionsSelect);
+		addFilters(verticalBodyLayout);
+		
+	}
+	
+	public void loadProjectVersions(Project project) {
+        List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
+		projectVersionsSelect = new Select<ProjectVersion>();
+		projectVersionsSelect.setLabel("Reports For");
+		projectVersionsSelect.setItems(projectVersionsList);
+		projectVersionsSelect.setValue(projectVersionsList.get(0));
+		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
+		
+	}
+	
+	public void addFilters(VerticalLayout verticalBodyLayout) {
+		
 	}
 }

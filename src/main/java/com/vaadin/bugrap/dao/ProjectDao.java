@@ -11,14 +11,13 @@ import org.vaadin.bugrap.domain.spring.ProjectRepository;
 public class ProjectDao {
 
 	private ProjectRepository projectRepository;
-	private List<Project> allProjectsList;
+	//private List<Project> allProjectsList;
 	
 	public ProjectDao(ProjectRepository projectRepository) {
 		this.projectRepository = projectRepository;
 	}
 	
-	public List<String> getAllProjectNames() {
-		allProjectsList = this.projectRepository.findAll();
-		return allProjectsList.stream().map(p->p.getName()).toList();
+	public List<Project> getAllProjectsList() {
+		return this.projectRepository.findAll();
 	}
 }
