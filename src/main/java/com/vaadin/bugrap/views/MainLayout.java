@@ -122,6 +122,40 @@ public class MainLayout extends VerticalLayout {
 	}
 	
 	public void addFilters(VerticalLayout verticalBodyLayout) {
+		HorizontalLayout filtersLayout = new HorizontalLayout();
 		
+		Div assigneeDiv = new Div();
+		assigneeDiv.getStyle().set("display", "flex");
+		assigneeDiv.getStyle().set("align-items", "center");
+		
+		Div assigneeDivText = new Div();
+		assigneeDivText.setText("Assignees");
+		
+		Tab onlyMe = new Tab("Only Me");
+		Tab everyone = new Tab("Everyone");
+		Tabs assigneeTabs = new Tabs(onlyMe, everyone);
+		assigneeTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		
+
+		assigneeDiv.add(assigneeDivText,assigneeTabs);
+		
+		Div statusDiv = new Div();
+		statusDiv.getStyle().set("display", "flex");
+		statusDiv.getStyle().set("align-items", "center");
+		
+		Div statusDivText = new Div();
+		statusDivText.setText("Status");
+		
+		Tab open = new Tab("Open");
+		Tab allKinds = new Tab("All kinds");
+		Tab custom = new Tab("Custom...");
+		Tabs statusTabs = new Tabs(open, allKinds,custom);
+		statusTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
+		
+
+		assigneeDiv.add(assigneeDivText,assigneeTabs);
+		statusDiv.add(statusDivText,statusTabs);
+		filtersLayout.add(assigneeDiv,statusDiv);
+		verticalBodyLayout.add(filtersLayout);
 	}
 }
