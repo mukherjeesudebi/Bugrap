@@ -19,7 +19,9 @@ import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @Route("")
 public class MainLayout extends VerticalLayout {
@@ -27,6 +29,7 @@ public class MainLayout extends VerticalLayout {
 	private ProjectDao projectDao;
 	private ProjectVersionDao projectVersionDao;
 	private ReportDao reportDao;
+	private Select<Project> projectSelect;
 	private Select<ProjectVersion> projectVersionsSelect;
 	private Grid<Report> grid = new Grid<>(Report.class, false);
 
@@ -34,6 +37,10 @@ public class MainLayout extends VerticalLayout {
 		this.projectDao = projectDao;
 		this.projectVersionDao = projectVersionDao;
 		this.reportDao = reportDao;
+		
+		projectSelect = new Select<Project>();
+		projectVersionsSelect = new Select<ProjectVersion>();
+		
 		addHeader();
 		addBody();
 	}
@@ -41,26 +48,32 @@ public class MainLayout extends VerticalLayout {
 	public void addHeader() {
 		HorizontalLayout headerHorizontalLayout = new HorizontalLayout();
 
-		Select<Project> select = new Select<Project>();
-		select.setItems(projectDao.getAllProjectsList());
-		select.setItemLabelGenerator(Project::getName);
-		select.setValue(projectDao.getAllProjectsList().get(0));
-		select.addValueChangeListener(event -> loadProjectVersions(event.getValue()));
-		headerHorizontalLayout.add(select);
+		projectSelect.setItems(projectDao.getAllProjectsList());
+		projectSelect.setItemLabelGenerator(Project::getName);
+		projectSelect.setValue(projectDao.getAllProjectsList().get(0));
+		projectSelect.addValueChangeListener(event -> loadProjectVersions(event.getValue()));
+		headerHorizontalLayout.add(projectSelect);
 
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
 		Icon userIcon = new Icon(VaadinIcon.USER);
 		Div userName = new Div();
 		userName.setText("Marc Manager");
 		Icon powerOffIcon = new Icon(VaadinIcon.POWER_OFF);
+		
+		/*
+		 * TextField searchField = new TextField();
+		 * searchField.setSuffixComponent(VaadinIcon.SEARCH.create());
+		 */
+		
 		headerHorizontalLayoutRight.add(userIcon, userName, powerOffIcon);
-		headerHorizontalLayoutRight.getStyle().set("color", "#3c86ce");
+		headerHorizontalLayoutRight.addClassName(LumoUtility.TextColor.PRIMARY);
 		headerHorizontalLayout.add(headerHorizontalLayoutRight);
 
 		headerHorizontalLayout.setWidthFull();
 		headerHorizontalLayout.setAlignItems(Alignment.CENTER);
 		headerHorizontalLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-		headerHorizontalLayout.getStyle().set("box-shadow", "0 4px 7px -2px gray");
+//		headerHorizontalLayout.getStyle().set("box-shadow", "0 4px 7px -2px gray");
+		headerHorizontalLayout.addClassNames(LumoUtility.BoxShadow.SMALL, LumoUtility.Padding.MEDIUM);
 		add(headerHorizontalLayout);
 		setHeightFull();
 	}
@@ -108,7 +121,7 @@ public class MainLayout extends VerticalLayout {
 	public void addReportingBlock(VerticalLayout verticalBodyLayout, Project selectedProject) {
 		loadProjectVersions(selectedProject);
 		loadReports(selectedProject);
-		
+
 		verticalBodyLayout.add(projectVersionsSelect);
 		addFilters(verticalBodyLayout);
 		verticalBodyLayout.add(grid);
@@ -116,8 +129,7 @@ public class MainLayout extends VerticalLayout {
 	}
 
 	public void loadProjectVersions(Project project) {
-		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
-		projectVersionsSelect = new Select<ProjectVersion>();
+		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);		
 		projectVersionsSelect.setLabel("Reports For");
 		projectVersionsSelect.setItems(projectVersionsList);
 		projectVersionsSelect.setValue(projectVersionsList.get(0));
@@ -135,12 +147,6 @@ public class MainLayout extends VerticalLayout {
 		Div assigneeDivText = new Div();
 		assigneeDivText.setText("Assignees");
 
-		/*
-		 * Tab onlyMe = new Tab("Only Me"); Tab everyone = new Tab("Everyone"); Tabs
-		 * assigneeTabs = new Tabs(onlyMe, everyone);
-		 * assigneeTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
-		 */
-
 		MenuBar assigneeTabsMenu = new MenuBar();
 		assigneeTabsMenu.addItem("Only Me");
 		assigneeTabsMenu.addItem("Everyone");
@@ -153,12 +159,6 @@ public class MainLayout extends VerticalLayout {
 
 		Div statusDivText = new Div();
 		statusDivText.setText("Status");
-
-		/*
-		 * Tab open = new Tab("Open"); Tab allKinds = new Tab("All kinds"); Tab custom =
-		 * new Tab("Custom..."); Tabs statusTabs = new Tabs(open, allKinds,custom);
-		 * statusTabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
-		 */
 
 		MenuBar statusTabsMenu = new MenuBar();
 		statusTabsMenu.addItem("Open");
@@ -173,9 +173,7 @@ public class MainLayout extends VerticalLayout {
 
 	public void loadReports(Project project) {
 		List<Report> reportsList = reportDao.getAllProjectReports(project);
-		System.out.println(reportsList);
-		
-		
+
 		grid.addColumn(Report::getPriority).setHeader("Priority");
 		grid.addColumn(Report::getType).setHeader("Type");
 		grid.addColumn(Report::getSummary).setHeader("Summary");
