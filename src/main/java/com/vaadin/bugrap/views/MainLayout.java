@@ -29,6 +29,7 @@ public class MainLayout extends VerticalLayout {
 	private ReportDao reportDao;
 	
 	private HeaderLayout headerLayout;
+	private BodyLayout bodyLayout;
 	private Select<Project> projectSelect;
 	private Select<ProjectVersion> projectVersionsSelect;
 	private Grid<Report> grid = new Grid<>(Report.class, false);
@@ -51,15 +52,8 @@ public class MainLayout extends VerticalLayout {
 	}
 
 	public void addBody() {
-		VerticalLayout verticalBodyLayout = new VerticalLayout();
-		verticalBodyLayout.setHeightFull();
-		verticalBodyLayout.setWidthFull();
-		verticalBodyLayout.getStyle().set("background-color", "#f0f0f0");
-
-		addFunctionAndSearch(verticalBodyLayout);
-		addReportingBlock(verticalBodyLayout, projectDao.getAllProjectsList().get(0));
-
-		add(verticalBodyLayout);
+		bodyLayout = new BodyLayout(projectVersionDao, reportDao);
+		add(bodyLayout);
 	}
 
 	public void addFunctionAndSearch(VerticalLayout verticalBodyLayout) {
