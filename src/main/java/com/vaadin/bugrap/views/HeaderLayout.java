@@ -1,5 +1,7 @@
 package com.vaadin.bugrap.views;
 
+import java.util.List;
+
 import org.vaadin.bugrap.domain.entities.Project;
 
 import com.vaadin.bugrap.dao.ProjectDao;
@@ -14,6 +16,9 @@ public class HeaderLayout extends HorizontalLayout {
 	
 	private ProjectDao projectDao;
 	private Select<Project> projectSelect;
+	private Project selectedProject;
+	
+	private BodyLayout bodyLayout;
 
 	public HeaderLayout(ProjectDao projectDao) {
 		this.projectDao = projectDao;
@@ -22,13 +27,17 @@ public class HeaderLayout extends HorizontalLayout {
 	
 	public void createHeader(){
 		projectSelect = new Select<Project>();
-		projectSelect.setItems(projectDao.getAllProjectsList());
+		List<Project> allProjectLists = projectDao.getAllProjectsList();
+		this.selectedProject = allProjectLists.get(0);
+		projectSelect.setItems(allProjectLists);
 		projectSelect.setItemLabelGenerator(Project::getName);
-		projectSelect.setValue(projectDao.getAllProjectsList().get(0));
-		/*
-		 * projectSelect.addValueChangeListener(event -> {
-		 * loadProjectVersions(event.getValue()); loadReports(event.getValue()); });
-		 */
+		projectSelect.setValue(this.selectedProject);
+
+		projectSelect.addValueChangeListener(event -> {
+			this.getBodyLayout().loadProjectVersions(event.getValue());
+			this.getBodyLayout().loadReports(event.getValue());
+		});
+	
 		add(projectSelect);
 
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
@@ -52,7 +61,21 @@ public class HeaderLayout extends HorizontalLayout {
 //		headerHorizontalLayout.getStyle().set("box-shadow", "0 4px 7px -2px gray");
 		addClassNames(LumoUtility.BoxShadow.SMALL, LumoUtility.Padding.MEDIUM);
 		setHeightFull();
+	}
 
-	
+	public Project getSelectedProject() {
+		return selectedProject;
+	}
+
+	public void setSelectedProject(Project selectedProject) {
+		this.selectedProject = selectedProject;
+	}
+
+	public BodyLayout getBodyLayout() {
+		return bodyLayout;
+	}
+
+	public void setBodyLayout(BodyLayout bodyLayout) {
+		this.bodyLayout = bodyLayout;
 	}
 }

@@ -22,13 +22,15 @@ public class BodyLayout extends VerticalLayout {
 
 	private ProjectVersionDao projectVersionDao;
 	private ReportDao reportDao;
+	private Project selectedProject;
 
 	private Select<ProjectVersion> projectVersionsSelect;
 	private Grid<Report> grid;
 
-	public BodyLayout(ProjectVersionDao projectVersionDao, ReportDao reportDao) {
+	public BodyLayout(ProjectVersionDao projectVersionDao, ReportDao reportDao,Project selectedProject) {
 		this.projectVersionDao = projectVersionDao;
 		this.reportDao = reportDao;
+		this.selectedProject = selectedProject;
 		createBody();
 	}
 
@@ -38,7 +40,7 @@ public class BodyLayout extends VerticalLayout {
 		getStyle().set("background-color", "#f0f0f0");
 
 		addFunctionAndSearch();
-		// addReportingBlock(projectDao.getAllProjectsList().get(0));
+		addReportingBlock();
 	}
 
 	public void addFunctionAndSearch() {
@@ -59,14 +61,15 @@ public class BodyLayout extends VerticalLayout {
 		add(functionButtonsLayout);
 	}
 	
-	public void addReportingBlock(Project selectedProject) {
+	public void addReportingBlock() {
 		loadProjectVersions(selectedProject);
 		addFilters();
-		loadReportsGrid(selectedProject);
+		loadReportsGrid();
 
 	}
 	
 	public void loadProjectVersions(Project project) {
+		projectVersionsSelect = new Select<ProjectVersion>();
 		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
 		projectVersionsSelect.setLabel("Reports For");
 		projectVersionsSelect.setItems(projectVersionsList);
@@ -110,7 +113,7 @@ public class BodyLayout extends VerticalLayout {
 		add(filtersLayout);
 	}
 
-	public void loadReportsGrid(Project project) {
+	public void loadReportsGrid() {
 		grid = new Grid<>(Report.class, false);
 		grid.addColumn(Report::getPriority).setHeader("Priority").setSortable(true);
 		grid.addColumn(Report::getType).setHeader("Type").setSortable(true);
@@ -118,7 +121,8 @@ public class BodyLayout extends VerticalLayout {
 		grid.addColumn(Report::getAssigned).setHeader("Assigned to").setSortable(true);
 		grid.addColumn(Report::getTimestamp).setHeader("Last modified").setSortable(true);
 		grid.addColumn(Report::getReportedTimestamp).setHeader("Reported").setSortable(true);
-		loadReports(project);
+		loadReports(selectedProject);
+		add(grid);
 	}
 
 	public void loadReports(Project project) {
