@@ -19,9 +19,7 @@ import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @Route("")
 public class MainLayout extends VerticalLayout {
@@ -29,6 +27,8 @@ public class MainLayout extends VerticalLayout {
 	private ProjectDao projectDao;
 	private ProjectVersionDao projectVersionDao;
 	private ReportDao reportDao;
+	
+	private HeaderLayout headerLayout;
 	private Select<Project> projectSelect;
 	private Select<ProjectVersion> projectVersionsSelect;
 	private Grid<Report> grid = new Grid<>(Report.class, false);
@@ -46,39 +46,8 @@ public class MainLayout extends VerticalLayout {
 	}
 
 	public void addHeader() {
-		HorizontalLayout headerHorizontalLayout = new HorizontalLayout();
-
-		projectSelect.setItems(projectDao.getAllProjectsList());
-		projectSelect.setItemLabelGenerator(Project::getName);
-		projectSelect.setValue(projectDao.getAllProjectsList().get(0));
-		projectSelect.addValueChangeListener(event -> {
-			loadProjectVersions(event.getValue());
-			loadReports(event.getValue());
-		});
-		headerHorizontalLayout.add(projectSelect);
-
-		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
-		Icon userIcon = new Icon(VaadinIcon.USER);
-		Div userName = new Div();
-		userName.setText("Marc Manager");
-		Icon powerOffIcon = new Icon(VaadinIcon.POWER_OFF);
-
-		/*
-		 * TextField searchField = new TextField();
-		 * searchField.setSuffixComponent(VaadinIcon.SEARCH.create());
-		 */
-
-		headerHorizontalLayoutRight.add(userIcon, userName, powerOffIcon);
-		headerHorizontalLayoutRight.addClassName(LumoUtility.TextColor.PRIMARY);
-		headerHorizontalLayout.add(headerHorizontalLayoutRight);
-
-		headerHorizontalLayout.setWidthFull();
-		headerHorizontalLayout.setAlignItems(Alignment.CENTER);
-		headerHorizontalLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-//		headerHorizontalLayout.getStyle().set("box-shadow", "0 4px 7px -2px gray");
-		headerHorizontalLayout.addClassNames(LumoUtility.BoxShadow.SMALL, LumoUtility.Padding.MEDIUM);
-		add(headerHorizontalLayout);
-		setHeightFull();
+		headerLayout = new HeaderLayout(projectDao);
+		add(headerLayout);
 	}
 
 	public void addBody() {
