@@ -37,10 +37,10 @@ public class MainLayout extends VerticalLayout {
 		this.projectDao = projectDao;
 		this.projectVersionDao = projectVersionDao;
 		this.reportDao = reportDao;
-		
+
 		projectSelect = new Select<Project>();
 		projectVersionsSelect = new Select<ProjectVersion>();
-		
+
 		addHeader();
 		addBody();
 	}
@@ -51,7 +51,10 @@ public class MainLayout extends VerticalLayout {
 		projectSelect.setItems(projectDao.getAllProjectsList());
 		projectSelect.setItemLabelGenerator(Project::getName);
 		projectSelect.setValue(projectDao.getAllProjectsList().get(0));
-		projectSelect.addValueChangeListener(event -> loadProjectVersions(event.getValue()));
+		projectSelect.addValueChangeListener(event -> {
+			loadProjectVersions(event.getValue());
+			loadReports(event.getValue());
+		});
 		headerHorizontalLayout.add(projectSelect);
 
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
@@ -59,12 +62,12 @@ public class MainLayout extends VerticalLayout {
 		Div userName = new Div();
 		userName.setText("Marc Manager");
 		Icon powerOffIcon = new Icon(VaadinIcon.POWER_OFF);
-		
+
 		/*
 		 * TextField searchField = new TextField();
 		 * searchField.setSuffixComponent(VaadinIcon.SEARCH.create());
 		 */
-		
+
 		headerHorizontalLayoutRight.add(userIcon, userName, powerOffIcon);
 		headerHorizontalLayoutRight.addClassName(LumoUtility.TextColor.PRIMARY);
 		headerHorizontalLayout.add(headerHorizontalLayoutRight);
@@ -120,7 +123,7 @@ public class MainLayout extends VerticalLayout {
 
 	public void addReportingBlock(VerticalLayout verticalBodyLayout, Project selectedProject) {
 		loadProjectVersions(selectedProject);
-		loadReports(selectedProject);
+		loadReportsGrid(selectedProject);
 
 		verticalBodyLayout.add(projectVersionsSelect);
 		addFilters(verticalBodyLayout);
@@ -129,7 +132,7 @@ public class MainLayout extends VerticalLayout {
 	}
 
 	public void loadProjectVersions(Project project) {
-		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);		
+		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
 		projectVersionsSelect.setLabel("Reports For");
 		projectVersionsSelect.setItems(projectVersionsList);
 		projectVersionsSelect.setValue(projectVersionsList.get(0));
@@ -171,17 +174,18 @@ public class MainLayout extends VerticalLayout {
 		verticalBodyLayout.add(filtersLayout);
 	}
 
+	public void loadReportsGrid(Project project) {
+		grid.addColumn(Report::getPriority).setHeader("Priority").setSortable(true);
+		grid.addColumn(Report::getType).setHeader("Type").setSortable(true);
+		grid.addColumn(Report::getSummary).setHeader("Summary").setSortable(true);
+		grid.addColumn(Report::getAssigned).setHeader("Assigned to").setSortable(true);
+		grid.addColumn(Report::getTimestamp).setHeader("Last modified").setSortable(true);
+		grid.addColumn(Report::getReportedTimestamp).setHeader("Reported").setSortable(true);
+		loadReports(project);
+	}
+
 	public void loadReports(Project project) {
 		List<Report> reportsList = reportDao.getAllProjectReports(project);
-
-		grid.addColumn(Report::getPriority).setHeader("Priority");
-		grid.addColumn(Report::getType).setHeader("Type");
-		grid.addColumn(Report::getSummary).setHeader("Summary");
-		grid.addColumn(Report::getAssigned).setHeader("Assigned to");
-		grid.addColumn(Report::getTimestamp).setHeader("Last modified");
-		grid.addColumn(Report::getReportedTimestamp).setHeader("Reported");
-
 		grid.setItems(reportsList);
-
 	}
 }
