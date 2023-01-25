@@ -27,7 +27,10 @@ public class BodyLayout extends VerticalLayout {
 	private Select<ProjectVersion> projectVersionsSelect;
 	private Grid<Report> grid;
 
-	public BodyLayout(ProjectVersionDao projectVersionDao, ReportDao reportDao,Project selectedProject) {
+
+	private ReportDetailsLayout reportDetailsLayout;
+
+	public BodyLayout(ProjectVersionDao projectVersionDao, ReportDao reportDao, Project selectedProject) {
 		this.projectVersionDao = projectVersionDao;
 		this.reportDao = reportDao;
 		this.selectedProject = selectedProject;
@@ -60,14 +63,14 @@ public class BodyLayout extends VerticalLayout {
 		functionButtonsLayout.add(bugButton, failureRequestButton, manageProjectButton);
 		add(functionButtonsLayout);
 	}
-	
+
 	public void addReportingBlock() {
 		loadProjectVersions(selectedProject);
 		addFilters();
 		loadReportsGrid();
 
 	}
-	
+
 	public void loadProjectVersions(Project project) {
 		projectVersionsSelect = new Select<ProjectVersion>();
 		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
@@ -128,5 +131,21 @@ public class BodyLayout extends VerticalLayout {
 	public void loadReports(Project project) {
 		List<Report> reportsList = reportDao.getAllProjectReports(project);
 		grid.setItems(reportsList);
+	}
+
+	public ReportDetailsLayout getReportDetailsLayout() {
+		return reportDetailsLayout;
+	}
+
+	public void setReportDetailsLayout(ReportDetailsLayout reportDetailsLayout) {
+		this.reportDetailsLayout = reportDetailsLayout;
+	}
+	
+	public Grid<Report> getGrid() {
+		return grid;
+	}
+
+	public void setGrid(Grid<Report> grid) {
+		this.grid = grid;
 	}
 }

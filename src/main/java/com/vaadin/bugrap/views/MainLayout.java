@@ -6,10 +6,11 @@ import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.bugrap.dao.ReportDao;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.Route;
 
 @Route("")
-public class MainLayout extends VerticalLayout {
+public class MainLayout extends SplitLayout {
 
 	private ProjectDao projectDao;
 	private ProjectVersionDao projectVersionDao;
@@ -19,26 +20,39 @@ public class MainLayout extends VerticalLayout {
 	private BodyLayout bodyLayout;
 	
 	private Project selectedProject;
+	private VerticalLayout verticalLayout;
+	private ReportDetailsLayout reportDetailsLayout;
 
 	public MainLayout(ProjectDao projectDao, ProjectVersionDao projectVersionDao, ReportDao reportDao) {
 		this.projectDao = projectDao;
 		this.projectVersionDao = projectVersionDao;
 		this.reportDao = reportDao;
-
+		
+		verticalLayout = new VerticalLayout();
+		reportDetailsLayout = new ReportDetailsLayout();
+		
 		addHeader();
-		addBody();
+		addBody();	
+		
+		addToPrimary(verticalLayout);
+		addToSecondary(reportDetailsLayout);
+		setOrientation(SplitLayout.Orientation.VERTICAL);
+		
+		bodyLayout.setReportDetailsLayout(reportDetailsLayout);
+		reportDetailsLayout.setGrid(bodyLayout.getGrid());
+		reportDetailsLayout.connectGrid();
 	}
 
 	public void addHeader() {
 		headerLayout = new HeaderLayout(projectDao);
-		add(headerLayout);
+		verticalLayout.add(headerLayout);
 		selectedProject = headerLayout.getSelectedProject();
 	}
 
-	public void addBody() {
+	public void addBody() {		
 		bodyLayout = new BodyLayout(projectVersionDao, reportDao,selectedProject);
-		add(bodyLayout);
-		headerLayout.setBodyLayout(bodyLayout);
+		verticalLayout.add(bodyLayout);
+		headerLayout.setBodyLayout(bodyLayout);		
 	}
 
 }

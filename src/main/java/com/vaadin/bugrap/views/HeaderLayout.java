@@ -59,7 +59,8 @@ public class HeaderLayout extends HorizontalLayout {
 		setAlignItems(Alignment.CENTER);
 		setJustifyContentMode(JustifyContentMode.BETWEEN);
 //		headerHorizontalLayout.getStyle().set("box-shadow", "0 4px 7px -2px gray");
-		addClassNames(LumoUtility.BoxShadow.SMALL, LumoUtility.Padding.MEDIUM);
+		addClassNames(LumoUtility.BoxShadow.SMALL);
+		// LumoUtility.Padding.MEDIUM
 		setHeightFull();
 	}
 
