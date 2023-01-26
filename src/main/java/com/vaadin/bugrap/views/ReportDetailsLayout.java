@@ -1,5 +1,6 @@
 package com.vaadin.bugrap.views;
 
+import java.awt.TextField;
 import java.util.stream.Stream;
 
 import org.vaadin.bugrap.domain.entities.Report;
@@ -28,12 +29,13 @@ public class ReportDetailsLayout extends VerticalLayout {
 	}
 
 	public void connectGrid() {
+		//TextField textf = new TextField();
 		gridDataView = grid.getGenericDataView();
 		grid.asSingleSelect().addValueChangeListener(event -> {
 			Report report = event.getValue();
-			System.out.println(report.getDescription());
 			reportSummary.setText(report.getSummary());
 			reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
+			reportBinder.readBean(report);
 		});
 	}
 	
@@ -42,6 +44,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 		add(reportSummary);
 		prioritySelect = new Select<Priority>();
 		prioritySelect.setItems(Stream.of(Report.Priority.values()).toList());
+		prioritySelect.setLabel("Priority");
 		add(prioritySelect);
 	}
 
