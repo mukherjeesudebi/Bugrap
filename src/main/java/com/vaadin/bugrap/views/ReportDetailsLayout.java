@@ -36,7 +36,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private Select<Type> typeSelect;
 	private Select<Status> statusSelect;
 	private Select<Reporter> assignedToSelect;
-	private Select<ProjectVersion> projectVersionSelect;
+	private Select<ProjectVersion> reportprojectVersionSelect;
 	private Div descriptionDiv;
 
 	private ReporterDao reporterDao;
@@ -64,7 +64,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 			reportBinder.bind(typeSelect, Report::getType, Report::setType);
 			reportBinder.bind(statusSelect, Report::getStatus, Report::setStatus);
 			reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
-			reportBinder.bind(projectVersionSelect, Report::getVersion, Report::setVersion);
+			reportBinder.bind(reportprojectVersionSelect, Report::getVersion, Report::setVersion);
 			reportBinder.readBean(selectedReport);
 		});
 		saveChangesButton.addClickListener(event -> {
@@ -116,10 +116,10 @@ public class ReportDetailsLayout extends VerticalLayout {
 		assignedToSelect.setLabel("Assigned to");
 		propertiesLayout.add(assignedToSelect);
 
-		projectVersionSelect = new Select<ProjectVersion>();
-		projectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
-		projectVersionSelect.setLabel("Version");
-		propertiesLayout.add(projectVersionSelect);
+		reportprojectVersionSelect = new Select<ProjectVersion>();
+		reportprojectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
+		reportprojectVersionSelect.setLabel("Version");
+		propertiesLayout.add(reportprojectVersionSelect);
 
 		propertiesActionlLayout.add(saveChangesButton);
 		propertiesActionlLayout.add(revertChangesButton);
@@ -152,12 +152,12 @@ public class ReportDetailsLayout extends VerticalLayout {
 		this.selectedProject = selectedProject;
 	}
 
-	public Select<ProjectVersion> getProjectVersionSelect() {
-		return projectVersionSelect;
+	public Select<ProjectVersion> getReportprojectVersionSelect() {
+		return reportprojectVersionSelect;
 	}
 
-	public void setProjectVersionSelect(Select<ProjectVersion> projectVersionSelect) {
-		this.projectVersionSelect = projectVersionSelect;
+	public void setReportprojectVersionSelect(Select<ProjectVersion> reportprojectVersionSelect) {
+		this.reportprojectVersionSelect = reportprojectVersionSelect;
 	}
 
 }

@@ -24,10 +24,12 @@ public class BodyLayout extends VerticalLayout {
 	private ProjectVersionService projectVersionService;
 	private ReportDao reportDao;
 	private Project selectedProject;
+	private ProjectVersion selectedProjectVerion;
 
 	private Select<ProjectVersion> projectVersionsSelect = new Select<ProjectVersion>();;
 	private Grid<Report> grid;
 
+	private List<Report> reportsList;
 
 	private ReportDetailsLayout reportDetailsLayout;
 
@@ -63,16 +65,15 @@ public class BodyLayout extends VerticalLayout {
 		manageProjectButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
 
 		functionButtonsLayout.add(bugButton, failureRequestButton, manageProjectButton);
-		
+
 		TextField textField = new TextField();
 		textField.setClearButtonVisible(true);
 		textField.setPlaceholder("Search...");
 		textField.setPrefixComponent(VaadinIcon.SEARCH.create());
-		
-		
+
 		functionAnsSearchLayout.add(functionButtonsLayout);
 		functionAnsSearchLayout.add(textField);
-		
+
 		functionAnsSearchLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		functionAnsSearchLayout.setWidthFull();
 		add(functionAnsSearchLayout);
@@ -85,22 +86,29 @@ public class BodyLayout extends VerticalLayout {
 		loadReportsGrid();
 
 	}
-	
-	public void loadProjectVersionsWithLabel(){
+
+	public void loadProjectVersionsWithLabel() {
 		HorizontalLayout projectVersionshorizontalLayout = new HorizontalLayout();
 		Div versionsLabel = new Div();
 		versionsLabel.setText("Reports For");
 		projectVersionshorizontalLayout.add(versionsLabel);
 		projectVersionshorizontalLayout.add(projectVersionsSelect);
 		projectVersionshorizontalLayout.setAlignItems(Alignment.CENTER);
-		add(projectVersionshorizontalLayout);		
+		add(projectVersionshorizontalLayout);
 	}
 
 	public void loadProjectVersions(Project project) {
 		List<ProjectVersion> projectVersionsList = projectVersionService.getAllProjectVersionsWithAllVersions(project);
+		selectedProjectVerion = projectVersionsList.get(0);
 		projectVersionsSelect.setItems(projectVersionsList);
-		projectVersionsSelect.setValue(projectVersionsList.get(0));
+		projectVersionsSelect.setValue(selectedProjectVerion);
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
+		projectVersionsSelect.addValueChangeListener(event -> {
+			if (event.getValue() != null) {
+				reportsList = reportDao.filterByProjectVersion(selectedProject, event.getValue());
+				grid.setItems(reportsList);
+			}
+		});
 
 	}
 
@@ -151,7 +159,7 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	public void loadReports(Project project) {
-		List<Report> reportsList = reportDao.getAllProjectReports(project);
+		reportsList = reportDao.getAllProjectReports(project);
 		grid.setItems(reportsList);
 	}
 
@@ -162,12 +170,20 @@ public class BodyLayout extends VerticalLayout {
 	public void setReportDetailsLayout(ReportDetailsLayout reportDetailsLayout) {
 		this.reportDetailsLayout = reportDetailsLayout;
 	}
-	
+
 	public Grid<Report> getGrid() {
 		return grid;
 	}
 
 	public void setGrid(Grid<Report> grid) {
 		this.grid = grid;
+	}
+
+	public Project getSelectedProject() {
+		return selectedProject;
+	}
+
+	public void setSelectedProject(Project selectedProject) {
+		this.selectedProject = selectedProject;
 	}
 }

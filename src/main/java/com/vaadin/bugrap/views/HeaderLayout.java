@@ -38,9 +38,10 @@ public class HeaderLayout extends HorizontalLayout {
 		projectSelect.setValue(this.selectedProject);
 
 		projectSelect.addValueChangeListener(event -> {
+			this.getBodyLayout().setSelectedProject(event.getValue());
 			this.getBodyLayout().loadProjectVersions(event.getValue());
 			this.getBodyLayout().loadReports(event.getValue());
-			this.getReportDetailsLayout().getProjectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
+			//this.getReportDetailsLayout().getReportprojectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
 		});
 	
 		add(projectSelect);
