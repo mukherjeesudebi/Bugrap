@@ -5,6 +5,7 @@ import java.util.List;
 import org.vaadin.bugrap.domain.entities.Project;
 
 import com.vaadin.bugrap.dao.ProjectDao;
+import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -17,11 +18,14 @@ public class HeaderLayout extends HorizontalLayout {
 	private ProjectDao projectDao;
 	private Select<Project> projectSelect;
 	private Project selectedProject;
+	private ProjectVersionDao projectVersionDao;
 	
 	private BodyLayout bodyLayout;
+	private ReportDetailsLayout reportDetailsLayout;
 
-	public HeaderLayout(ProjectDao projectDao) {
+	public HeaderLayout(ProjectDao projectDao,ProjectVersionDao projectVersionDao) {
 		this.projectDao = projectDao;
+		this.projectVersionDao = projectVersionDao;
 		createHeader();
 	}
 	
@@ -36,6 +40,7 @@ public class HeaderLayout extends HorizontalLayout {
 		projectSelect.addValueChangeListener(event -> {
 			this.getBodyLayout().loadProjectVersions(event.getValue());
 			this.getBodyLayout().loadReports(event.getValue());
+			this.getReportDetailsLayout().getProjectVersionSelect().setItems(this.projectVersionDao.getAllProjectVersions(this.selectedProject));
 		});
 	
 		add(projectSelect);
@@ -78,5 +83,13 @@ public class HeaderLayout extends HorizontalLayout {
 
 	public void setBodyLayout(BodyLayout bodyLayout) {
 		this.bodyLayout = bodyLayout;
+	}
+
+	public ReportDetailsLayout getReportDetailsLayout() {
+		return reportDetailsLayout;
+	}
+
+	public void setReportDetailsLayout(ReportDetailsLayout reportDetailsLayout) {
+		this.reportDetailsLayout = reportDetailsLayout;
 	}
 }

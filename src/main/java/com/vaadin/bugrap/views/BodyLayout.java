@@ -24,7 +24,7 @@ public class BodyLayout extends VerticalLayout {
 	private ReportDao reportDao;
 	private Project selectedProject;
 
-	private Select<ProjectVersion> projectVersionsSelect;
+	private Select<ProjectVersion> projectVersionsSelect = new Select<ProjectVersion>();;
 	private Grid<Report> grid;
 
 
@@ -66,19 +66,18 @@ public class BodyLayout extends VerticalLayout {
 
 	public void addReportingBlock() {
 		loadProjectVersions(selectedProject);
+		add(projectVersionsSelect);
 		addFilters();
 		loadReportsGrid();
 
 	}
 
 	public void loadProjectVersions(Project project) {
-		projectVersionsSelect = new Select<ProjectVersion>();
 		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
 		projectVersionsSelect.setLabel("Reports For");
 		projectVersionsSelect.setItems(projectVersionsList);
 		projectVersionsSelect.setValue(projectVersionsList.get(0));
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
-		add(projectVersionsSelect);
 
 	}
 

@@ -5,6 +5,7 @@ import org.vaadin.bugrap.domain.entities.Project;
 import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.bugrap.dao.ReportDao;
+import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.Route;
@@ -15,6 +16,7 @@ public class MainLayout extends SplitLayout {
 	private ProjectDao projectDao;
 	private ProjectVersionDao projectVersionDao;
 	private ReportDao reportDao;
+	private ReporterDao reporterDao;
 	
 	private HeaderLayout headerLayout;
 	private BodyLayout bodyLayout;
@@ -23,13 +25,14 @@ public class MainLayout extends SplitLayout {
 	private VerticalLayout verticalLayout;
 	private ReportDetailsLayout reportDetailsLayout;
 
-	public MainLayout(ProjectDao projectDao, ProjectVersionDao projectVersionDao, ReportDao reportDao) {
+	public MainLayout(ProjectDao projectDao, ProjectVersionDao projectVersionDao, ReportDao reportDao,ReporterDao reporterDao) {
 		this.projectDao = projectDao;
 		this.projectVersionDao = projectVersionDao;
 		this.reportDao = reportDao;
+		this.reporterDao = reporterDao;
 		
 		verticalLayout = new VerticalLayout();
-		reportDetailsLayout = new ReportDetailsLayout();
+		reportDetailsLayout = new ReportDetailsLayout(this.reporterDao,this.projectVersionDao);
 		
 		addHeader();
 		addBody();	
@@ -41,10 +44,12 @@ public class MainLayout extends SplitLayout {
 		bodyLayout.setReportDetailsLayout(reportDetailsLayout);
 		reportDetailsLayout.setGrid(bodyLayout.getGrid());
 		reportDetailsLayout.connectGrid();
+		reportDetailsLayout.setSelectedProject(this.selectedProject);
+		reportDetailsLayout.createReportDetails();
 	}
 
 	public void addHeader() {
-		headerLayout = new HeaderLayout(projectDao);
+		headerLayout = new HeaderLayout(projectDao,projectVersionDao);
 		verticalLayout.add(headerLayout);
 		selectedProject = headerLayout.getSelectedProject();
 	}
@@ -52,7 +57,8 @@ public class MainLayout extends SplitLayout {
 	public void addBody() {		
 		bodyLayout = new BodyLayout(projectVersionDao, reportDao,selectedProject);
 		verticalLayout.add(bodyLayout);
-		headerLayout.setBodyLayout(bodyLayout);		
+		headerLayout.setBodyLayout(bodyLayout);	
+		headerLayout.setReportDetailsLayout(reportDetailsLayout);
 	}
 
 }
