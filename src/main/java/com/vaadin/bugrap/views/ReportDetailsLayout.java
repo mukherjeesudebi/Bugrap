@@ -21,6 +21,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 
 public class ReportDetailsLayout extends VerticalLayout {
 
@@ -39,6 +40,10 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private ProjectVersionDao projectVersionDao;
 	private Project selectedProject;
 
+	private Button saveChangesButton = new Button("Save Changes");
+	private Button revertChangesButton = new Button("Revert");
+	private Report selectedReport;
+
 	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionDao projectVersionDao) {
 		this.reporterDao = reporterDao;
 		this.projectVersionDao = projectVersionDao;
@@ -48,15 +53,27 @@ public class ReportDetailsLayout extends VerticalLayout {
 	public void connectGrid() {
 		gridDataView = grid.getGenericDataView();
 		grid.asSingleSelect().addValueChangeListener(event -> {
-			Report report = event.getValue();
-			reportSummary.setText(report.getSummary());
-			descriptionDiv.setText(report.getDescription());
+			selectedReport = event.getValue();
+			reportSummary.setText(selectedReport.getSummary());
+			descriptionDiv.setText(selectedReport.getDescription());
 			reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
 			reportBinder.bind(typeSelect, Report::getType, Report::setType);
 			reportBinder.bind(statusSelect, Report::getStatus, Report::setStatus);
 			reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
 			reportBinder.bind(projectVersionSelect, Report::getVersion, Report::setVersion);
-			reportBinder.readBean(report);
+			reportBinder.readBean(selectedReport);
+		});
+		saveChangesButton.addClickListener(event -> {
+			try {
+				reportBinder.writeBean(selectedReport);
+				gridDataView.refreshItem(selectedReport);
+			} catch (ValidationException e) {
+				e.printStackTrace();
+			}
+		});
+		revertChangesButton.addClickListener(event -> {
+			reportBinder.readBean(selectedReport);
+			gridDataView.refreshItem(selectedReport);
 		});
 	}
 
@@ -92,20 +109,17 @@ public class ReportDetailsLayout extends VerticalLayout {
 		projectVersionSelect.setItems(this.projectVersionDao.getAllProjectVersions(this.selectedProject));
 		projectVersionSelect.setLabel("Version");
 		propertiesLayout.add(projectVersionSelect);
-		
-		Button saveChangesButton = new Button("Save Changes");
+
 		propertiesActionlLayout.add(saveChangesButton);
-		
-		Button revertChangesButton = new Button("Revert");
 		propertiesActionlLayout.add(revertChangesButton);
-		
+
 		reportPropertieAndAction.add(propertiesLayout);
 		reportPropertieAndAction.add(propertiesActionlLayout);
 		reportPropertieAndAction.setAlignItems(Alignment.BASELINE);
 		reportPropertieAndAction.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		reportPropertieAndAction.setWidthFull();
 		add(reportPropertieAndAction);
-		
+
 		descriptionDiv = new Div();
 		add(descriptionDiv);
 

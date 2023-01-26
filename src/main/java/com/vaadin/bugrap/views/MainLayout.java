@@ -40,6 +40,8 @@ public class MainLayout extends SplitLayout {
 		addToPrimary(verticalLayout);
 		addToSecondary(reportDetailsLayout);
 		setOrientation(SplitLayout.Orientation.VERTICAL);
+		setHeightFull();
+		setSplitterPosition(60);
 		
 		bodyLayout.setReportDetailsLayout(reportDetailsLayout);
 		reportDetailsLayout.setGrid(bodyLayout.getGrid());
