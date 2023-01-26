@@ -6,6 +6,7 @@ import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.bugrap.dao.ReportDao;
 import com.vaadin.bugrap.dao.ReporterDao;
+import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.Route;
@@ -14,9 +15,10 @@ import com.vaadin.flow.router.Route;
 public class MainLayout extends SplitLayout {
 
 	private ProjectDao projectDao;
-	private ProjectVersionDao projectVersionDao;
 	private ReportDao reportDao;
 	private ReporterDao reporterDao;
+	
+	private ProjectVersionService projectVersionService;
 	
 	private HeaderLayout headerLayout;
 	private BodyLayout bodyLayout;
@@ -25,14 +27,14 @@ public class MainLayout extends SplitLayout {
 	private VerticalLayout verticalLayout;
 	private ReportDetailsLayout reportDetailsLayout;
 
-	public MainLayout(ProjectDao projectDao, ProjectVersionDao projectVersionDao, ReportDao reportDao,ReporterDao reporterDao) {
+	public MainLayout(ProjectDao projectDao, ProjectVersionService projectVersionService, ReportDao reportDao,ReporterDao reporterDao) {
 		this.projectDao = projectDao;
-		this.projectVersionDao = projectVersionDao;
+		this.projectVersionService = projectVersionService;
 		this.reportDao = reportDao;
 		this.reporterDao = reporterDao;
 		
 		verticalLayout = new VerticalLayout();
-		reportDetailsLayout = new ReportDetailsLayout(this.reporterDao,this.projectVersionDao);
+		reportDetailsLayout = new ReportDetailsLayout(this.reporterDao,this.projectVersionService);
 		
 		addHeader();
 		addBody();	
@@ -51,13 +53,13 @@ public class MainLayout extends SplitLayout {
 	}
 
 	public void addHeader() {
-		headerLayout = new HeaderLayout(projectDao,projectVersionDao);
+		headerLayout = new HeaderLayout(projectDao,projectVersionService);
 		verticalLayout.add(headerLayout);
 		selectedProject = headerLayout.getSelectedProject();
 	}
 
 	public void addBody() {		
-		bodyLayout = new BodyLayout(projectVersionDao, reportDao,selectedProject);
+		bodyLayout = new BodyLayout(projectVersionService, reportDao,selectedProject);
 		verticalLayout.add(bodyLayout);
 		headerLayout.setBodyLayout(bodyLayout);	
 		headerLayout.setReportDetailsLayout(reportDetailsLayout);

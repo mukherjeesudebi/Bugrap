@@ -6,8 +6,8 @@ import org.vaadin.bugrap.domain.entities.Project;
 import org.vaadin.bugrap.domain.entities.ProjectVersion;
 import org.vaadin.bugrap.domain.entities.Report;
 
-import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.bugrap.dao.ReportDao;
+import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -21,7 +21,7 @@ import com.vaadin.flow.component.textfield.TextField;
 
 public class BodyLayout extends VerticalLayout {
 
-	private ProjectVersionDao projectVersionDao;
+	private ProjectVersionService projectVersionService;
 	private ReportDao reportDao;
 	private Project selectedProject;
 
@@ -31,8 +31,8 @@ public class BodyLayout extends VerticalLayout {
 
 	private ReportDetailsLayout reportDetailsLayout;
 
-	public BodyLayout(ProjectVersionDao projectVersionDao, ReportDao reportDao, Project selectedProject) {
-		this.projectVersionDao = projectVersionDao;
+	public BodyLayout(ProjectVersionService projectVersionService, ReportDao reportDao, Project selectedProject) {
+		this.projectVersionService = projectVersionService;
 		this.reportDao = reportDao;
 		this.selectedProject = selectedProject;
 		createBody();
@@ -97,7 +97,7 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	public void loadProjectVersions(Project project) {
-		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
+		List<ProjectVersion> projectVersionsList = projectVersionService.getAllProjectVersionsWithAllVersions(project);
 		projectVersionsSelect.setItems(projectVersionsList);
 		projectVersionsSelect.setValue(projectVersionsList.get(0));
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);

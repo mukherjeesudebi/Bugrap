@@ -10,8 +10,8 @@ import org.vaadin.bugrap.domain.entities.Report.Status;
 import org.vaadin.bugrap.domain.entities.Report.Type;
 import org.vaadin.bugrap.domain.entities.Reporter;
 
-import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.bugrap.dao.ReporterDao;
+import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -40,16 +40,17 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private Div descriptionDiv;
 
 	private ReporterDao reporterDao;
-	private ProjectVersionDao projectVersionDao;
 	private Project selectedProject;
+	
+	private ProjectVersionService projectVersionService;
 
 	private Button saveChangesButton = new Button("Save Changes");
 	private Button revertChangesButton = new Button("Revert");
 	private Report selectedReport;
 
-	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionDao projectVersionDao) {
+	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService) {
 		this.reporterDao = reporterDao;
-		this.projectVersionDao = projectVersionDao;
+		this.projectVersionService = projectVersionService;
 		reportBinder = new Binder<>(Report.class);
 	}
 
@@ -116,7 +117,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 		propertiesLayout.add(assignedToSelect);
 
 		projectVersionSelect = new Select<ProjectVersion>();
-		projectVersionSelect.setItems(this.projectVersionDao.getAllProjectVersions(this.selectedProject));
+		projectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
 		projectVersionSelect.setLabel("Version");
 		propertiesLayout.add(projectVersionSelect);
 
