@@ -17,6 +17,7 @@ import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextField;
 
 public class BodyLayout extends VerticalLayout {
 
@@ -47,6 +48,7 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	public void addFunctionAndSearch() {
+		HorizontalLayout functionAnsSearchLayout = new HorizontalLayout();
 		HorizontalLayout functionButtonsLayout = new HorizontalLayout();
 		Button bugButton = new Button("Report a bug", new Icon(VaadinIcon.BUG));
 		bugButton.getStyle().set("background-color", "white");
@@ -61,20 +63,41 @@ public class BodyLayout extends VerticalLayout {
 		manageProjectButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
 
 		functionButtonsLayout.add(bugButton, failureRequestButton, manageProjectButton);
-		add(functionButtonsLayout);
+		
+		TextField textField = new TextField();
+		textField.setClearButtonVisible(true);
+		textField.setPlaceholder("Search...");
+		textField.setPrefixComponent(VaadinIcon.SEARCH.create());
+		
+		
+		functionAnsSearchLayout.add(functionButtonsLayout);
+		functionAnsSearchLayout.add(textField);
+		
+		functionAnsSearchLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+		functionAnsSearchLayout.setWidthFull();
+		add(functionAnsSearchLayout);
 	}
 
 	public void addReportingBlock() {
 		loadProjectVersions(selectedProject);
-		add(projectVersionsSelect);
+		loadProjectVersionsWithLabel();
 		addFilters();
 		loadReportsGrid();
 
 	}
+	
+	public void loadProjectVersionsWithLabel(){
+		HorizontalLayout projectVersionshorizontalLayout = new HorizontalLayout();
+		Div versionsLabel = new Div();
+		versionsLabel.setText("Reports For");
+		projectVersionshorizontalLayout.add(versionsLabel);
+		projectVersionshorizontalLayout.add(projectVersionsSelect);
+		projectVersionshorizontalLayout.setAlignItems(Alignment.CENTER);
+		add(projectVersionshorizontalLayout);		
+	}
 
 	public void loadProjectVersions(Project project) {
 		List<ProjectVersion> projectVersionsList = projectVersionDao.getAllProjectVersions(project);
-		projectVersionsSelect.setLabel("Reports For");
 		projectVersionsSelect.setItems(projectVersionsList);
 		projectVersionsSelect.setValue(projectVersionsList.get(0));
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);

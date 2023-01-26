@@ -13,10 +13,13 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 import com.vaadin.bugrap.dao.ProjectVersionDao;
 import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -78,8 +81,15 @@ public class ReportDetailsLayout extends VerticalLayout {
 	}
 
 	public void createReportDetails() {
+		HorizontalLayout summaryWithOpen = new HorizontalLayout();
+		summaryWithOpen.setWidthFull();
 		reportSummary = new H6();
-		add(reportSummary);
+		Button openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
+		openButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		summaryWithOpen.add(reportSummary);
+		summaryWithOpen.add(openButton);
+		summaryWithOpen.setJustifyContentMode(JustifyContentMode.BETWEEN);
+		add(summaryWithOpen);
 
 		HorizontalLayout reportPropertieAndAction = new HorizontalLayout();
 		HorizontalLayout propertiesLayout = new HorizontalLayout();
