@@ -41,7 +41,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 
 	private ReporterDao reporterDao;
 	private Project selectedProject;
-	
+
 	private ProjectVersionService projectVersionService;
 
 	private Button saveChangesButton = new Button("Save Changes");
@@ -57,15 +57,17 @@ public class ReportDetailsLayout extends VerticalLayout {
 	public void connectGrid() {
 		gridDataView = grid.getGenericDataView();
 		grid.asSingleSelect().addValueChangeListener(event -> {
-			selectedReport = event.getValue();
-			reportSummary.setText(selectedReport.getSummary());
-			descriptionDiv.setText(selectedReport.getDescription());
-			reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
-			reportBinder.bind(typeSelect, Report::getType, Report::setType);
-			reportBinder.bind(statusSelect, Report::getStatus, Report::setStatus);
-			reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
-			reportBinder.bind(reportprojectVersionSelect, Report::getVersion, Report::setVersion);
-			reportBinder.readBean(selectedReport);
+			if (event.getValue() != null) {
+				selectedReport = event.getValue();
+				reportSummary.setText(selectedReport.getSummary());
+				descriptionDiv.setText(selectedReport.getDescription());
+				reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
+				reportBinder.bind(typeSelect, Report::getType, Report::setType);
+				reportBinder.bind(statusSelect, Report::getStatus, Report::setStatus);
+				reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
+				reportBinder.bind(reportprojectVersionSelect, Report::getVersion, Report::setVersion);
+				reportBinder.readBean(selectedReport);
+			}
 		});
 		saveChangesButton.addClickListener(event -> {
 			try {

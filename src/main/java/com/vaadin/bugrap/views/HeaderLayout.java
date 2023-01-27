@@ -41,6 +41,7 @@ public class HeaderLayout extends HorizontalLayout {
 			this.getBodyLayout().setSelectedProject(event.getValue());
 			this.getBodyLayout().loadProjectVersions(event.getValue());
 			this.getBodyLayout().loadReports(event.getValue());
+			this.reportDetailsLayout.getReportprojectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(event.getValue()));
 			//this.getReportDetailsLayout().getReportprojectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
 		});
 	
