@@ -16,18 +16,19 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 
 
 @Route("reportDetails")
-public class ReportDetailsSeparateLayout extends VerticalLayout {
+public class ReportDetailsSeparateLayout extends VerticalLayout{
 	private Report report;
 	private ReporterDao reporterDao;
 	private ProjectVersionService projectVersionService;
@@ -38,17 +39,27 @@ public class ReportDetailsSeparateLayout extends VerticalLayout {
 		this.reporterDao = reporterDao;
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
-		reportBinder = new Binder<>(Report.class);	
+		reportBinder = new Binder<>(Report.class);
+		report = (Report)VaadinSession.getCurrent().getAttribute("Report");
+		createSingleReportView();
 	}
+	
+
 
 	public void createSingleReportView() {
 
-		HorizontalLayout summaryWithOpen = new HorizontalLayout();
-		summaryWithOpen.setWidthFull();
+		HorizontalLayout projectNameAndVersion = new HorizontalLayout();
+		
+		Div projectName = new Div();
+		projectName.setText(report.getProject().getName());
+		Div projectVersion = new Div();
+		projectVersion.setText(report.getVersion().getVersion());
+		projectNameAndVersion.add(projectName,projectVersion);
+		add(projectNameAndVersion);
+		
 		H6 reportSummary = new H6();
-		summaryWithOpen.add(reportSummary);
-		summaryWithOpen.setJustifyContentMode(JustifyContentMode.BETWEEN);
-		add(summaryWithOpen);
+		reportSummary.setText(report.getSummary());
+		add(reportSummary);
 
 		HorizontalLayout reportPropertieAndAction = new HorizontalLayout();
 		HorizontalLayout propertiesLayout = new HorizontalLayout();
@@ -118,16 +129,6 @@ public class ReportDetailsSeparateLayout extends VerticalLayout {
 			reportBinder.readBean(report);
 		});
 
-	}
-
-	public Report getReport() {
-		return report;
-	}
-
-	public void setReport(Report report) {
-		System.out.println("report detaisl " + report.getSummary());
-		this.report = report;
-		createSingleReportView();
 	}
 
 }

@@ -13,6 +13,7 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -30,6 +31,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.server.BrowserWindowOpener;
 
 public class ReportDetailsLayout extends VerticalLayout {
@@ -103,14 +105,21 @@ public class ReportDetailsLayout extends VerticalLayout {
 		Button openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
 		openButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		openButton.addClickListener(e -> {
-			UI.getCurrent().navigate(ReportDetailsSeparateLayout.class)
-					.ifPresent(report -> report.setReport(selectedReport));
+			/*
+			 * UI.getCurrent().navigate(ReportDetailsSeparateLayout.class) .ifPresent(report
+			 * -> report.setReport(selectedReport));
+			 */
+			//ComponentUtil.setData(UI.getCurrent().getParent().get(), Report.class, selectedReport);
+			VaadinSession.getCurrent().setAttribute("Report",selectedReport);
+			UI.getCurrent().getPage().open("reportDetails");
+			
 
 		});
 		summaryWithOpen.add(reportSummary);
 		summaryWithOpen.add(openButton);
 		summaryWithOpen.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		add(summaryWithOpen);
+		
 
 		HorizontalLayout reportPropertieAndAction = new HorizontalLayout();
 		HorizontalLayout propertiesLayout = new HorizontalLayout();
