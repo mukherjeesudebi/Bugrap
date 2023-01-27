@@ -20,16 +20,7 @@ public class ReportDao {
 		return reportRepository.findAllByProject(project);
 	}
 
-	public List<Report> filterByProjectVersion(Project project, ProjectVersion selectedProjectVersion) {
-		List<Report> reportList = this.getAllProjectReports(project);
-		if (!selectedProjectVersion.getVersion().equals("All versions")) {
-			List<Report> filteredList = reportList.stream().filter(report -> report.getVersion() != null)
-					.filter(report -> selectedProjectVersion.getVersion().equals(report.getVersion().getVersion()))
-					.toList();
-			filteredList.stream().forEach(report-> System.out.println(report.getVersion().getVersion()));
-			return filteredList;
-		}
-		return reportList;
+	public void saveUpdatedReportDetails(Report report) {
+		this.reportRepository.save(report);
 	}
-
 }

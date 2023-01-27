@@ -8,6 +8,7 @@ import org.vaadin.bugrap.domain.entities.Report;
 
 import com.vaadin.bugrap.dao.ReportDao;
 import com.vaadin.bugrap.service.ProjectVersionService;
+import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -22,7 +23,7 @@ import com.vaadin.flow.component.textfield.TextField;
 public class BodyLayout extends VerticalLayout {
 
 	private ProjectVersionService projectVersionService;
-	private ReportDao reportDao;
+	private ReportService reportService;
 	private Project selectedProject;
 	private ProjectVersion selectedProjectVerion;
 
@@ -33,9 +34,9 @@ public class BodyLayout extends VerticalLayout {
 
 	private ReportDetailsLayout reportDetailsLayout;
 
-	public BodyLayout(ProjectVersionService projectVersionService, ReportDao reportDao, Project selectedProject) {
+	public BodyLayout(ProjectVersionService projectVersionService, ReportService reportService, Project selectedProject) {
 		this.projectVersionService = projectVersionService;
-		this.reportDao = reportDao;
+		this.reportService = reportService;
 		this.selectedProject = selectedProject;
 		createBody();
 	}
@@ -105,7 +106,7 @@ public class BodyLayout extends VerticalLayout {
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
 		projectVersionsSelect.addValueChangeListener(event -> {
 			if (event.getValue() != null) {
-				reportsList = reportDao.filterByProjectVersion(selectedProject, event.getValue());
+				reportsList = reportService.filterByProjectVersion(selectedProject, event.getValue());
 				grid.setItems(reportsList);
 			}
 		});
@@ -159,7 +160,7 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	public void loadReports(Project project) {
-		reportsList = reportDao.getAllProjectReports(project);
+		reportsList = reportService.getAllProjectReports(project);
 		grid.setItems(reportsList);
 	}
 

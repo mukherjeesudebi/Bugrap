@@ -12,6 +12,7 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 
 import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.bugrap.service.ProjectVersionService;
+import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -20,11 +21,15 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+
 
 public class ReportDetailsLayout extends VerticalLayout {
 
@@ -43,14 +48,16 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private Project selectedProject;
 
 	private ProjectVersionService projectVersionService;
+	private ReportService reportService;
 
 	private Button saveChangesButton = new Button("Save Changes");
 	private Button revertChangesButton = new Button("Revert");
 	private Report selectedReport;
-
-	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService) {
+	
+	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,ReportService reportService) {
 		this.reporterDao = reporterDao;
 		this.projectVersionService = projectVersionService;
+		this.reportService = reportService;
 		reportBinder = new Binder<>(Report.class);
 	}
 
@@ -72,7 +79,10 @@ public class ReportDetailsLayout extends VerticalLayout {
 		saveChangesButton.addClickListener(event -> {
 			try {
 				reportBinder.writeBean(selectedReport);
+				this.reportService.saveUpdatedReportDetails(selectedReport);				
 				gridDataView.refreshItem(selectedReport);
+				Notification successNotification = Notification.show("Report Details Saved Successfully", 3000, Position.MIDDLE);
+				successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 			} catch (ValidationException e) {
 				e.printStackTrace();
 			}
