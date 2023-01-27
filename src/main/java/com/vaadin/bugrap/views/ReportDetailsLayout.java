@@ -13,6 +13,7 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -22,13 +23,14 @@ import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.server.BrowserWindowOpener;
 
 public class ReportDetailsLayout extends VerticalLayout {
 
@@ -100,7 +102,11 @@ public class ReportDetailsLayout extends VerticalLayout {
 		reportSummary = new H6();
 		Button openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
 		openButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		openButton.addClickListener(e -> openButton.getUI().ifPresent(ui -> ui.getPage().open("reportDetails")));
+		openButton.addClickListener(e -> {
+			UI.getCurrent().navigate(ReportDetailsSeparateLayout.class)
+					.ifPresent(report -> report.setReport(selectedReport));
+
+		});
 		summaryWithOpen.add(reportSummary);
 		summaryWithOpen.add(openButton);
 		summaryWithOpen.setJustifyContentMode(JustifyContentMode.BETWEEN);
