@@ -30,7 +30,6 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 
-
 public class ReportDetailsLayout extends VerticalLayout {
 
 	private Grid<Report> grid;
@@ -53,8 +52,9 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private Button saveChangesButton = new Button("Save Changes");
 	private Button revertChangesButton = new Button("Revert");
 	private Report selectedReport;
-	
-	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,ReportService reportService) {
+
+	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,
+			ReportService reportService) {
 		this.reporterDao = reporterDao;
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
@@ -79,9 +79,10 @@ public class ReportDetailsLayout extends VerticalLayout {
 		saveChangesButton.addClickListener(event -> {
 			try {
 				reportBinder.writeBean(selectedReport);
-				this.reportService.saveUpdatedReportDetails(selectedReport);				
+				this.reportService.saveUpdatedReportDetails(selectedReport);
 				gridDataView.refreshItem(selectedReport);
-				Notification successNotification = Notification.show("Report Details Saved Successfully", 3000, Position.MIDDLE);
+				Notification successNotification = Notification.show("Report Details Saved Successfully", 3000,
+						Position.MIDDLE);
 				successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 			} catch (ValidationException e) {
 				e.printStackTrace();
@@ -99,6 +100,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 		reportSummary = new H6();
 		Button openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
 		openButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		openButton.addClickListener(e -> openButton.getUI().ifPresent(ui -> ui.getPage().open("reportDetails")));
 		summaryWithOpen.add(reportSummary);
 		summaryWithOpen.add(openButton);
 		summaryWithOpen.setJustifyContentMode(JustifyContentMode.BETWEEN);
