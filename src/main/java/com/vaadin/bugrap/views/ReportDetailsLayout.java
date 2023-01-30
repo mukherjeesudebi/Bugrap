@@ -110,10 +110,10 @@ public class ReportDetailsLayout extends VerticalLayout {
 			 * -> report.setReport(selectedReport));
 			 */
 			//ComponentUtil.setData(UI.getCurrent().getParent().get(), Report.class, selectedReport);
-			VaadinSession.getCurrent().setAttribute("Report",selectedReport);
-			UI.getCurrent().getPage().open("reportDetails");
+			//VaadinSession.getCurrent().setAttribute("Report",selectedReport);
+			String url = "/reportDetails/"+selectedReport.getId();
+			UI.getCurrent().getPage().open(url);
 			
-
 		});
 		summaryWithOpen.add(reportSummary);
 		summaryWithOpen.add(openButton);

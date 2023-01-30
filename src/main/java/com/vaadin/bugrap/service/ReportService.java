@@ -1,6 +1,7 @@
 package com.vaadin.bugrap.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 import org.vaadin.bugrap.domain.entities.Project;
@@ -36,6 +37,10 @@ public class ReportService {
 
 	public void saveUpdatedReportDetails(Report report) {
 		this.reportDao.saveUpdatedReportDetails(report);
+	}
+	
+	public Optional<Report> findReportById(Long id) {
+		return this.reportDao.findReportById(id);
 	}
 	
 }

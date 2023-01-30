@@ -1,5 +1,9 @@
 package com.vaadin.bugrap.views;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.vaadin.bugrap.domain.entities.Comment;
@@ -10,6 +14,7 @@ import org.vaadin.bugrap.domain.entities.Report.Status;
 import org.vaadin.bugrap.domain.entities.Report.Type;
 import org.vaadin.bugrap.domain.entities.Reporter;
 
+import com.vaadin.bugrap.dao.CommentDao;
 import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
@@ -17,7 +22,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -30,25 +34,41 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.theme.lumo.LumoIcon;
 
 @Route("reportDetails")
-public class ReportDetailsSeparateLayout extends VerticalLayout {
+public class ReportDetailsSeparateLayout extends VerticalLayout
+		implements HasUrlParameter<Long>, AfterNavigationObserver {
 	private Report report;
+	private Long reportId;
 	private ReporterDao reporterDao;
 	private ProjectVersionService projectVersionService;
 	private Binder<Report> reportBinder;
 	private ReportService reportService;
+	private CommentDao commentDao;
 
 	public ReportDetailsSeparateLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,
-			ReportService reportService) {
+			ReportService reportService,CommentDao commentDao) {
 		this.reporterDao = reporterDao;
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
 		reportBinder = new Binder<>(Report.class);
-		report = (Report) VaadinSession.getCurrent().getAttribute("Report");
+		this.commentDao = commentDao;
+	}
+
+	@Override
+	public void setParameter(BeforeEvent event, Long parameter) {
+		reportId = parameter;
+
+	}
+
+	@Override
+	public void afterNavigation(AfterNavigationEvent event) {
+		report = this.reportService.findReportById(reportId).get();
 		createSingleReportView();
 		createCommentsAttachmentsView();
 		setHeightFull();
@@ -56,13 +76,13 @@ public class ReportDetailsSeparateLayout extends VerticalLayout {
 	}
 
 	public void createSingleReportView() {
-        VerticalLayout reportDetailsLayout = new VerticalLayout();
+		VerticalLayout reportDetailsLayout = new VerticalLayout();
 		HorizontalLayout projectNameAndVersion = new HorizontalLayout();
 
 		Div projectName = new Div();
 		projectName.setText(report.getProject().getName());
 		Div projectVersion = new Div();
-		projectVersion.setText(report.getVersion()!=null? report.getVersion().getVersion():"");
+		projectVersion.setText(report.getVersion() != null ? report.getVersion().getVersion() : "");
 		projectNameAndVersion.add(projectName, projectVersion);
 		reportDetailsLayout.add(projectNameAndVersion);
 
@@ -95,8 +115,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout {
 		propertiesLayout.add(assignedToSelect);
 
 		Select<ProjectVersion> reportprojectVersionSelect = new Select<ProjectVersion>();
-		reportprojectVersionSelect
-				.setItems(this.projectVersionService.getAllProjectVersions(this.report.getProject()));
+		reportprojectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.report.getProject()));
 		reportprojectVersionSelect.setLabel("Version");
 		propertiesLayout.add(reportprojectVersionSelect);
 
@@ -139,48 +158,49 @@ public class ReportDetailsSeparateLayout extends VerticalLayout {
 		revertChangesButton.addClickListener(event -> {
 			reportBinder.readBean(report);
 		});
-		
+
 		add(reportDetailsLayout);
 
 	}
 
 	public void createCommentsAttachmentsView() {
-     HorizontalLayout commentsAttachmentsLayout = new HorizontalLayout();
-     
-     VerticalLayout editorLayout = new VerticalLayout();
-     RichTextEditor richTextEditor = new RichTextEditor();
-     richTextEditor.setMaxHeight("400px");
-     richTextEditor.setMinHeight("200px");
-     richTextEditor.addThemeVariants(RichTextEditorVariant.LUMO_COMPACT);
-     editorLayout.add(richTextEditor);
-     
-     HorizontalLayout commentButtonsDiv = new HorizontalLayout();
-     Icon checkmarkLumoIcon = new Icon("lumo", "checkmark");
-     Button addCommentButton = new Button("Comment",checkmarkLumoIcon);
-     Icon crossLumoIcon = new Icon("lumo", "cross");
-     Button cancelButton = new Button("Cancel",crossLumoIcon);
-     commentButtonsDiv.add(addCommentButton,cancelButton);
-     editorLayout.add(commentButtonsDiv);
-     
-     
-     commentsAttachmentsLayout.add(editorLayout);
-     
-     MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
-     Upload upload = new Upload(buffer);
+		HorizontalLayout commentsAttachmentsLayout = new HorizontalLayout();
 
-     upload.addSucceededListener(event -> {
-         String fileName = event.getFileName();
-        // InputStream inputStream = buffer.getInputStream(fileName);
+		VerticalLayout editorLayout = new VerticalLayout();
+		RichTextEditor richTextEditor = new RichTextEditor();
+		richTextEditor.setMaxHeight("400px");
+		richTextEditor.setMinHeight("200px");
+		richTextEditor.addThemeVariants(RichTextEditorVariant.LUMO_COMPACT);
+		editorLayout.add(richTextEditor);
 
-         // Do something with the file data
-         // processFile(inputStream, fileName);
-     });
-     commentsAttachmentsLayout.add(upload);
-     commentsAttachmentsLayout.setWidthFull();
-     commentsAttachmentsLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-     commentsAttachmentsLayout.getStyle().set("background-color", "#f0f0f0");
-     add(commentsAttachmentsLayout);
-     
+		HorizontalLayout commentButtonsDiv = new HorizontalLayout();
+		Icon checkmarkLumoIcon = new Icon("lumo", "checkmark");
+		Button addCommentButton = new Button("Comment", checkmarkLumoIcon);
+		Icon crossLumoIcon = new Icon("lumo", "cross");
+		Button cancelButton = new Button("Cancel", crossLumoIcon);
+		commentButtonsDiv.add(addCommentButton, cancelButton);
+		editorLayout.add(commentButtonsDiv);
+
+		commentsAttachmentsLayout.add(editorLayout);
+
+		MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+		Upload upload = new Upload(buffer);
+
+		/*
+		 * upload.addSucceededListener(event -> { String fileName = event.getFileName();
+		 * InputStream inputStream = buffer.getInputStream(fileName);
+		 * createNewAttachment(fileName,inputStream,report);
+		 * 
+		 * // Do something with the file data // processFile(inputStream, fileName); });
+		 */
+		commentsAttachmentsLayout.add(upload);
+		commentsAttachmentsLayout.setWidthFull();
+		commentsAttachmentsLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+		commentsAttachmentsLayout.getStyle().set("background-color", "#f0f0f0");
+		
+		
+		add(commentsAttachmentsLayout);
+
 	}
 
 }

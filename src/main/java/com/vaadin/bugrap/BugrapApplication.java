@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.vaadin.bugrap.domain.spring.DBTools;
 
 import com.vaadin.flow.component.dependency.NpmPackage;
@@ -18,6 +19,7 @@ import com.vaadin.flow.theme.Theme;
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @NpmPackage(value = "@vaadin-component-factory/vcf-nav", version = "1.0.6")
 @ComponentScan({"org.vaadin.bugrap.domain.spring","com.vaadin.bugrap"})
+@EnableJpaRepositories(basePackages = "com.vaadin.bugrap.repository")
 public class BugrapApplication extends SpringBootServletInitializer implements AppShellConfigurator{
 
 	@Autowired
