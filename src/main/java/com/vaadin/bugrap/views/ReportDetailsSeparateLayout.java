@@ -1,8 +1,8 @@
 package com.vaadin.bugrap.views;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -198,9 +198,47 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		commentsAttachmentsLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		commentsAttachmentsLayout.getStyle().set("background-color", "#f0f0f0");
 		
-		
+		addCommentButton.addClickListener(event -> {
+			createNewComment(buffer);
+			showAllComments();
+		});
 		add(commentsAttachmentsLayout);
 
+	}
+	
+	public void createNewComment(MultiFileMemoryBuffer buffer) {
+		Set<String> files = buffer.getFiles();
+		Date timestamp = new Date();
+		
+		for(String fileName : files) {
+			Comment attachment = new Comment();
+			attachment.setType(Comment.Type.ATTACHMENT);
+			attachment.setAttachmentName(fileName);
+			attachment.setReport(report);
+			attachment.setTimestamp(timestamp);
+			try {
+				attachment.setAttachment(buffer.getInputStream(fileName).readAllBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			commentDao.saveComment(attachment);
+			
+		}
+		
+		Comment comment = new Comment();
+		comment.setType(Comment.Type.COMMENT);
+		comment.setReport(report);
+		comment.setTimestamp(timestamp);
+		commentDao.saveComment(comment);
+		
+		
+		
+	}
+	
+	public void showAllComments() {
+		List<Comment> comments = commentDao.getAllComments(report);
+		
 	}
 
 }
