@@ -35,6 +35,7 @@ public class BodyLayout extends VerticalLayout {
 	private List<Report> reportsList;
 
 	private ReportDetailsLayout reportDetailsLayout;
+	private DistributionBar distributionBar = new DistributionBar();
 
 	public BodyLayout(ProjectVersionService projectVersionService, ReportService reportService, Project selectedProject) {
 		this.projectVersionService = projectVersionService;
@@ -110,6 +111,10 @@ public class BodyLayout extends VerticalLayout {
 			if (event.getValue() != null) {
 				reportsList = reportService.filterByProjectVersion(selectedProject, event.getValue());
 				grid.setItems(reportsList);
+				distributionBar.setClosed(reportService.getClosedCount(reportsList));
+				distributionBar.setUnAssigned(reportService.getUnassignedCount(reportsList));
+				distributionBar.setUnResolved(reportService.getUnResolvedCount(reportsList));
+				distributionBar.setWidthLayout();
 			}
 		});
 
@@ -148,8 +153,6 @@ public class BodyLayout extends VerticalLayout {
 		filtersLayout.add(assigneeDiv, statusDiv);
 		add(filtersLayout);
 		
-		Map<String,Integer> map = new HashMap<String,Integer>();		
-		DistributionBar distributionBar = new DistributionBar();
 		add(distributionBar);
 	}
 
@@ -167,6 +170,10 @@ public class BodyLayout extends VerticalLayout {
 
 	public void loadReports(Project project) {
 		reportsList = reportService.getAllProjectReports(project);
+		distributionBar.setClosed(reportService.getClosedCount(reportsList));
+		distributionBar.setUnAssigned(reportService.getUnassignedCount(reportsList));
+		distributionBar.setUnResolved(reportService.getUnResolvedCount(reportsList));
+		distributionBar.setWidthLayout();
 		grid.setItems(reportsList);
 	}
 

@@ -1,6 +1,8 @@
 package com.vaadin.bugrap.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -18,7 +20,6 @@ public class ReportService {
 	public ReportService(ReportDao reportDao) {
 		this.reportDao = reportDao;
 	}
-	
 
 	public List<Report> getAllProjectReports(Project project) {
 		return reportDao.getAllProjectReports(project);
@@ -30,18 +31,30 @@ public class ReportService {
 			List<Report> filteredList = reportList.stream().filter(report -> report.getVersion() != null)
 					.filter(report -> selectedProjectVersion.getVersion().equals(report.getVersion().getVersion()))
 					.toList();
-			reportList = filteredList;
+			return filteredList;
 		}
-		
 		return reportList;
+	}
+
+	public Integer getClosedCount(List<Report> reportList) {
+		return reportList.stream().filter(report -> report.getStatus()!=null && report.getStatus().equals(Report.Status.FIXED)).toList().size();
+	}
+
+	public Integer getUnassignedCount(List<Report> reportList) {
+		return reportList.stream().filter(report -> report.getAssigned() == null).toList().size();
+	}
+
+	public Integer getUnResolvedCount(List<Report> reportList) {
+		return reportList.stream().filter(report -> !(report.getStatus()!=null && report.getStatus().equals(Report.Status.FIXED))).toList()
+				.size();
 	}
 
 	public void saveUpdatedReportDetails(Report report) {
 		this.reportDao.saveUpdatedReportDetails(report);
 	}
-	
+
 	public Optional<Report> findReportById(Long id) {
 		return this.reportDao.findReportById(id);
 	}
-	
+
 }

@@ -6,16 +6,26 @@ export class DistributionBar extends LitElement {
 	closed = 0;
 
 	@property()
-	unresolved = 0;
+	unResolved = 0;
 
 	@property()
-	unassigned = 0;
+	unAssigned = 0;
+	
+	@property()
+	closedWidth = "";
+	
+	@property()
+	unResolvedWidth = "";
+	
+	@property()
+	unAssignedWidth = "";
 
 	static get styles() {
 		return css`
 		.distributionContainer{
 			display:flex;
 			flex-direction: row;
+			width: 450px;
 		}
 		.barStructure{
 			min-height:30px;
@@ -39,9 +49,9 @@ export class DistributionBar extends LitElement {
 	render() {
 		return html`
 		<div class="distributionContainer">
-			<div class="barStructure blueBackground">${this.closed}</div>
-			<div class="barStructure greenBackground">${this.unresolved}</div>
-			<div class="barStructure orangeBackground">${this.unassigned}</div>
+			<div class="barStructure blueBackground" style="width:${this.closedWidth}">${this.closed}</div>
+			<div class="barStructure greenBackground" style="width:${this.unResolvedWidth}">${this.unResolved}</div>
+			<div class="barStructure orangeBackground" style="width:${this.unAssignedWidth}">${this.unAssigned}</div>
 		</div>
 		`;
 	}
