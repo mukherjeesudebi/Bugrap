@@ -13,7 +13,7 @@ public class DistributionBar extends Component {
 	private String closedWidth;
 	private String unResolvedWidth;
 	private String unAssignedWidth;
-	
+
 	public Integer getClosed() {
 		return closed;
 	}
@@ -40,8 +40,7 @@ public class DistributionBar extends Component {
 		this.unResolved = unResolved;
 		getElement().setProperty("unResolved", this.unResolved);
 	}
-	
-	
+
 	public String getClosedWidth() {
 		return closedWidth;
 	}
@@ -70,11 +69,17 @@ public class DistributionBar extends Component {
 	}
 
 	public void setWidthLayout() {
-		int totalCount = this.closed+this.unAssigned+this.unResolved;	
-		this.setClosedWidth(Math.round(((float)this.closed/totalCount)*100)+"%");
-		this.setUnResolvedWidth(Math.round(((float)this.unResolved/totalCount)*100)+"%");
-		this.setUnAssignedWidth(Math.round(((float)this.unAssigned/totalCount)*100)+"%");
-		
+		int totalCount = this.closed + this.unAssigned + this.unResolved;
+		if (totalCount >= 13) {
+			this.setClosedWidth(Math.round(((float) this.closed / totalCount) * 100) + "%");
+			this.setUnResolvedWidth(Math.round(((float) this.unResolved / totalCount) * 100) + "%");
+			this.setUnAssignedWidth(Math.round(((float) this.unAssigned / totalCount) * 100) + "%");
+		} else {
+			this.setClosedWidth(this.closed * 30 + "px");
+			this.setUnResolvedWidth(this.unResolved * 30 + "px");
+			this.setUnAssignedWidth(this.unAssigned * 30 + "px");
+		}
+
 	}
 
 }
