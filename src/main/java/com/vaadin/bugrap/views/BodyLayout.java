@@ -1,12 +1,14 @@
 package com.vaadin.bugrap.views;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.bugrap.domain.entities.Project;
 import org.vaadin.bugrap.domain.entities.ProjectVersion;
 import org.vaadin.bugrap.domain.entities.Report;
 
-import com.vaadin.bugrap.dao.ReportDao;
+import com.vaadin.bugrap.components.DistributionBar;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
@@ -145,6 +147,10 @@ public class BodyLayout extends VerticalLayout {
 		statusDiv.add(statusDivText, statusTabsMenu);
 		filtersLayout.add(assigneeDiv, statusDiv);
 		add(filtersLayout);
+		
+		Map<String,Integer> map = new HashMap<String,Integer>();		
+		DistributionBar distributionBar = new DistributionBar();
+		add(distributionBar);
 	}
 
 	public void loadReportsGrid() {

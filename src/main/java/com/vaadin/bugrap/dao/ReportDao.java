@@ -15,7 +15,7 @@ public class ReportDao {
 	private ReportRepository reportRepository;
 	private BugrapReportRepository bugrapReportRepository;
 
-	public ReportDao(ReportRepository reportRepository,BugrapReportRepository bugrapReportRepository) {
+	public ReportDao(ReportRepository reportRepository, BugrapReportRepository bugrapReportRepository) {
 		this.reportRepository = reportRepository;
 		this.bugrapReportRepository = bugrapReportRepository;
 	}
@@ -30,5 +30,5 @@ public class ReportDao {
 
 	public Optional<Report> findReportById(Long id) {
 		return this.bugrapReportRepository.findById(id);
-	}
+	}	
 }

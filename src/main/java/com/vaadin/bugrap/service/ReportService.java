@@ -30,8 +30,9 @@ public class ReportService {
 			List<Report> filteredList = reportList.stream().filter(report -> report.getVersion() != null)
 					.filter(report -> selectedProjectVersion.getVersion().equals(report.getVersion().getVersion()))
 					.toList();
-			return filteredList;
+			reportList = filteredList;
 		}
+		
 		return reportList;
 	}
 
