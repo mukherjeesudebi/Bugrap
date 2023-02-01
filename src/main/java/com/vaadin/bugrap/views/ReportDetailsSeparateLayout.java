@@ -1,6 +1,11 @@
 package com.vaadin.bugrap.views;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -22,17 +27,15 @@ import com.vaadin.bugrap.security.SecurityService;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
-import com.vaadin.flow.component.richtexteditor.RichTextEditorVariant;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.upload.Upload;
@@ -44,6 +47,7 @@ import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 
 @PermitAll
 @Route("reportDetails")
@@ -60,7 +64,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 	private SecurityService securityService;
 
 	public ReportDetailsSeparateLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,
-			ReportService reportService, CommentDao commentDao,SecurityService securityService) {
+			ReportService reportService, CommentDao commentDao, SecurityService securityService) {
 		this.reporterDao = reporterDao;
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
@@ -167,11 +171,11 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		revertChangesButton.addClickListener(event -> {
 			reportBinder.readBean(report);
 		});
-		
+
 		addExistingComments(reportDetailsLayout);
 
 		add(reportDetailsLayout);
-        
+
 	}
 
 	public void createCommentsAttachmentsView() {
@@ -203,8 +207,19 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		Div helperTextBody = new Div();
 		helperTextBody.setText("Only PDF, PNG and JPG files are allowed. Max file size is 5MB.");
 		helperText.add(helperTextHeader, helperTextBody);
+
 		MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
 		Upload upload = new Upload(buffer);
+		upload.setAcceptedFileTypes("application/pdf", ".pdf", "image/jpeg", ".jpeg", "jpg", "image/png", ".png");
+		int maxFileSizeInBytes = 5 * 1024 * 1024;
+		upload.setMaxFileSize(maxFileSizeInBytes);
+
+		upload.addFileRejectedListener(event -> {
+			String errorMessage = event.getErrorMessage();
+
+			Notification notification = Notification.show(errorMessage, 5000, Notification.Position.MIDDLE);
+			notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		});
 
 		attachmentsLayout.add(helperText);
 		attachmentsLayout.add(upload);
@@ -231,12 +246,37 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		add(commentsAttachmentsLayout);
 
 	}
-	
+
 	public void addExistingComments(VerticalLayout reportDetailsLayout) {
-		
+		List<Comment> comments = commentDao.getAllComments(report);
+		Div commentDiv = new Div();
+
+		for (Comment comment : comments) {
+			if (comment.getType() == Comment.Type.COMMENT) {
+				Div commentString = new Div();
+				commentString.setText(comment.getComment());
+				commentDiv.add(commentString);
+			} else if (comment.getType() == Comment.Type.ATTACHMENT) {
+				Div attachmentDiv = new Div();
+				//attachment.setText(comment.getAttachmentName());
+				addLinkToFile(comment.getAttachmentName(), comment.getAttachment(),attachmentDiv);
+				commentDiv.add(attachmentDiv);
+			}
+		}
+
+		reportDetailsLayout.add(commentDiv);
 	}
-	
-	
+
+	private void addLinkToFile(String fileName,byte[] attachment,Div attachmentDiv) {
+        StreamResource streamResource = new StreamResource(fileName, ()-> getStream(attachment));
+        Anchor link = new Anchor(streamResource, fileName);
+        link.getElement().setAttribute("download", true);
+        attachmentDiv.add(link);
+    }
+
+	private InputStream getStream(byte[] attachment) {
+		return new ByteArrayInputStream(attachment);
+	}
 
 	public void createNewComment(MultiFileMemoryBuffer buffer) {
 		Set<String> files = buffer.getFiles();
