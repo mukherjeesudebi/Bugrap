@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import javax.annotation.security.PermitAll;
+
 import org.vaadin.bugrap.domain.entities.Comment;
 import org.vaadin.bugrap.domain.entities.ProjectVersion;
 import org.vaadin.bugrap.domain.entities.Report;
@@ -16,11 +18,13 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 
 import com.vaadin.bugrap.dao.CommentDao;
 import com.vaadin.bugrap.dao.ReporterDao;
+import com.vaadin.bugrap.security.SecurityService;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -30,6 +34,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.richtexteditor.RichTextEditorVariant;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
@@ -40,6 +45,7 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+@PermitAll
 @Route("reportDetails")
 public class ReportDetailsSeparateLayout extends VerticalLayout
 		implements HasUrlParameter<Long>, AfterNavigationObserver {
@@ -50,14 +56,17 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 	private Binder<Report> reportBinder;
 	private ReportService reportService;
 	private CommentDao commentDao;
+	private TextArea richTextEditor;
+	private SecurityService securityService;
 
 	public ReportDetailsSeparateLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,
-			ReportService reportService,CommentDao commentDao) {
+			ReportService reportService, CommentDao commentDao,SecurityService securityService) {
 		this.reporterDao = reporterDao;
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
 		reportBinder = new Binder<>(Report.class);
 		this.commentDao = commentDao;
+		this.securityService = securityService;
 	}
 
 	@Override
@@ -158,19 +167,22 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		revertChangesButton.addClickListener(event -> {
 			reportBinder.readBean(report);
 		});
+		
+		addExistingComments(reportDetailsLayout);
 
 		add(reportDetailsLayout);
-
+        
 	}
 
 	public void createCommentsAttachmentsView() {
 		HorizontalLayout commentsAttachmentsLayout = new HorizontalLayout();
 
 		VerticalLayout editorLayout = new VerticalLayout();
-		RichTextEditor richTextEditor = new RichTextEditor();
-		richTextEditor.setMaxHeight("400px");
-		richTextEditor.setMinHeight("200px");
-		richTextEditor.addThemeVariants(RichTextEditorVariant.LUMO_COMPACT);
+		// RichTextEditor richTextEditor = new RichTextEditor();
+		richTextEditor = new TextArea();
+		richTextEditor.setHeight("250px");
+		richTextEditor.setWidth("800px");
+		// richTextEditor.addThemeVariants(RichTextEditorVariant.LUMO_COMPACT);
 		editorLayout.add(richTextEditor);
 
 		HorizontalLayout commentButtonsDiv = new HorizontalLayout();
@@ -183,8 +195,20 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 
 		commentsAttachmentsLayout.add(editorLayout);
 
+		VerticalLayout attachmentsLayout = new VerticalLayout();
+
+		Div helperText = new Div();
+		Div helperTextHeader = new Div();
+		helperTextHeader.setText("Attachments");
+		Div helperTextBody = new Div();
+		helperTextBody.setText("Only PDF, PNG and JPG files are allowed. Max file size is 5MB.");
+		helperText.add(helperTextHeader, helperTextBody);
 		MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
 		Upload upload = new Upload(buffer);
+
+		attachmentsLayout.add(helperText);
+		attachmentsLayout.add(upload);
+		attachmentsLayout.setWidth("26%");
 
 		/*
 		 * upload.addSucceededListener(event -> { String fileName = event.getFileName();
@@ -192,12 +216,14 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		 * createNewAttachment(fileName,inputStream,report);
 		 * 
 		 * // Do something with the file data // processFile(inputStream, fileName); });
+		 * 
+		 * 
 		 */
-		commentsAttachmentsLayout.add(upload);
+		commentsAttachmentsLayout.add(attachmentsLayout);
 		commentsAttachmentsLayout.setWidthFull();
 		commentsAttachmentsLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		commentsAttachmentsLayout.getStyle().set("background-color", "#f0f0f0");
-		
+
 		addCommentButton.addClickListener(event -> {
 			createNewComment(buffer);
 			showAllComments();
@@ -206,39 +232,47 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 
 	}
 	
+	public void addExistingComments(VerticalLayout reportDetailsLayout) {
+		
+	}
+	
+	
+
 	public void createNewComment(MultiFileMemoryBuffer buffer) {
 		Set<String> files = buffer.getFiles();
 		Date timestamp = new Date();
-		
-		for(String fileName : files) {
+
+		for (String fileName : files) {
 			Comment attachment = new Comment();
 			attachment.setType(Comment.Type.ATTACHMENT);
 			attachment.setAttachmentName(fileName);
 			attachment.setReport(report);
 			attachment.setTimestamp(timestamp);
+			attachment.setAuthor(securityService.getAuthenticatedUser());
 			try {
 				attachment.setAttachment(buffer.getInputStream(fileName).readAllBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			commentDao.saveComment(attachment);
-			
+
 		}
-		
-		Comment comment = new Comment();
-		comment.setType(Comment.Type.COMMENT);
-		comment.setReport(report);
-		comment.setTimestamp(timestamp);
-		commentDao.saveComment(comment);
-		
-		
-		
+		if (richTextEditor.getValue() != null || !("").equals(richTextEditor.getValue())) {
+			Comment comment = new Comment();
+			comment.setType(Comment.Type.COMMENT);
+			comment.setReport(report);
+			comment.setTimestamp(timestamp);
+			comment.setComment(richTextEditor.getValue());
+			comment.setAuthor(securityService.getAuthenticatedUser());
+			commentDao.saveComment(comment);
+		}
+
 	}
-	
+
 	public void showAllComments() {
 		List<Comment> comments = commentDao.getAllComments(report);
-		
+
 	}
 
 }
