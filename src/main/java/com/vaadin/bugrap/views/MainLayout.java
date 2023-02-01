@@ -1,17 +1,20 @@
 package com.vaadin.bugrap.views;
 
+import javax.annotation.security.PermitAll;
+
 import org.vaadin.bugrap.domain.entities.Project;
 
 import com.vaadin.bugrap.dao.ProjectDao;
-import com.vaadin.bugrap.dao.ReportDao;
 import com.vaadin.bugrap.dao.ReporterDao;
+import com.vaadin.bugrap.security.SecurityService;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.Route;
 
-@Route("")
+@PermitAll
+@Route("bugrap")
 public class MainLayout extends SplitLayout {
 
 	private ProjectDao projectDao;
@@ -26,12 +29,13 @@ public class MainLayout extends SplitLayout {
 	private Project selectedProject;
 	private VerticalLayout verticalLayout;
 	private ReportDetailsLayout reportDetailsLayout;
-
-	public MainLayout(ProjectDao projectDao, ProjectVersionService projectVersionService, ReportService reportService,ReporterDao reporterDao) {
+	private SecurityService securityService;
+	public MainLayout(ProjectDao projectDao, ProjectVersionService projectVersionService, ReportService reportService,ReporterDao reporterDao,SecurityService securityService) {
 		this.projectDao = projectDao;
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
 		this.reporterDao = reporterDao;
+		this.securityService = securityService;
 		
 		verticalLayout = new VerticalLayout();
 		reportDetailsLayout = new ReportDetailsLayout(this.reporterDao,this.projectVersionService,this.reportService);
@@ -53,7 +57,7 @@ public class MainLayout extends SplitLayout {
 	}
 
 	public void addHeader() {
-		headerLayout = new HeaderLayout(projectDao,projectVersionService);
+		headerLayout = new HeaderLayout(projectDao,projectVersionService,securityService);
 		verticalLayout.add(headerLayout);
 		selectedProject = headerLayout.getSelectedProject();
 	}

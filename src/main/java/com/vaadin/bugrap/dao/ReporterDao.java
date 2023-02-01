@@ -18,4 +18,12 @@ public class ReporterDao {
 	public List<Reporter> getAllReporters() {
 		return this.reporterRepository.findAll();
 	}
+	
+	public Reporter findReporter(String name,String password) {
+		return this.reporterRepository.getByNameAndPassword(name, password);
+	}
+	
+	public Reporter findReporterByName(String name,String password) {
+		return this.reporterRepository.getByNameOrEmail(name,null);
+	}
 }

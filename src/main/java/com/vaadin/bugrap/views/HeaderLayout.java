@@ -2,34 +2,41 @@ package com.vaadin.bugrap.views;
 
 import java.util.List;
 
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.vaadin.bugrap.domain.entities.Project;
 
 import com.vaadin.bugrap.dao.ProjectDao;
+import com.vaadin.bugrap.security.SecurityService;
 import com.vaadin.bugrap.service.ProjectVersionService;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class HeaderLayout extends HorizontalLayout {
-	
+
 	private ProjectDao projectDao;
 	private Select<Project> projectSelect;
 	private Project selectedProject;
 	private ProjectVersionService projectVersionService;
-	
+
 	private BodyLayout bodyLayout;
 	private ReportDetailsLayout reportDetailsLayout;
+	private SecurityService securityService;
 
-	public HeaderLayout(ProjectDao projectDao,ProjectVersionService projectVersionService) {
+	public HeaderLayout(ProjectDao projectDao, ProjectVersionService projectVersionService,
+			SecurityService securityService) {
 		this.projectDao = projectDao;
 		this.projectVersionService = projectVersionService;
+		this.securityService = securityService;
 		createHeader();
 	}
-	
-	public void createHeader(){
+
+	public void createHeader() {
 		projectSelect = new Select<Project>();
 		List<Project> allProjectLists = projectDao.getAllProjectsList();
 		this.selectedProject = allProjectLists.get(0);
@@ -41,17 +48,21 @@ public class HeaderLayout extends HorizontalLayout {
 			this.getBodyLayout().setSelectedProject(event.getValue());
 			this.getBodyLayout().loadProjectVersions(event.getValue());
 			this.getBodyLayout().loadReports(event.getValue());
-			this.reportDetailsLayout.getReportprojectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(event.getValue()));
-			//this.getReportDetailsLayout().getReportprojectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
+			this.reportDetailsLayout.getReportprojectVersionSelect()
+					.setItems(this.projectVersionService.getAllProjectVersions(event.getValue()));
+			// this.getReportDetailsLayout().getReportprojectVersionSelect().setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
 		});
-	
+
 		add(projectSelect);
 
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
 		Icon userIcon = new Icon(VaadinIcon.USER);
 		Div userName = new Div();
-		userName.setText("Marc Manager");
-		Icon powerOffIcon = new Icon(VaadinIcon.POWER_OFF);
+		userName.setText(securityService.getAuthenticatedUser().getName());
+		Button powerOffIcon = new Button("", new Icon(VaadinIcon.POWER_OFF));
+		powerOffIcon.addClickListener(event -> {
+			this.logout();
+		});
 
 		/*
 		 * TextField searchField = new TextField();
@@ -93,5 +104,11 @@ public class HeaderLayout extends HorizontalLayout {
 
 	public void setReportDetailsLayout(ReportDetailsLayout reportDetailsLayout) {
 		this.reportDetailsLayout = reportDetailsLayout;
+	}
+
+	public void logout() {
+		// getUI().get().getCurrent().getPage().setLocation(LOGOUT_SUCCESS_URL);
+		SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+		logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(), null, null);
 	}
 }
