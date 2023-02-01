@@ -1,8 +1,6 @@
 package com.vaadin.bugrap.views;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.vaadin.bugrap.domain.entities.Project;
 import org.vaadin.bugrap.domain.entities.ProjectVersion;
@@ -13,6 +11,7 @@ import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -21,6 +20,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.LitRenderer;
+import com.vaadin.flow.data.renderer.Renderer;
 
 public class BodyLayout extends VerticalLayout {
 
@@ -92,13 +93,18 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	public void loadProjectVersionsWithLabel() {
+		HorizontalLayout versionAndDistributionLayout = new HorizontalLayout();
 		HorizontalLayout projectVersionshorizontalLayout = new HorizontalLayout();
 		Div versionsLabel = new Div();
 		versionsLabel.setText("Reports For");
 		projectVersionshorizontalLayout.add(versionsLabel);
 		projectVersionshorizontalLayout.add(projectVersionsSelect);
 		projectVersionshorizontalLayout.setAlignItems(Alignment.CENTER);
-		add(projectVersionshorizontalLayout);
+		versionAndDistributionLayout.add(projectVersionshorizontalLayout);
+		versionAndDistributionLayout.add(distributionBar);
+		versionAndDistributionLayout.setAlignItems(Alignment.CENTER);
+		add(versionAndDistributionLayout);
+		
 	}
 
 	public void loadProjectVersions(Project project) {
@@ -109,6 +115,11 @@ public class BodyLayout extends VerticalLayout {
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
 		projectVersionsSelect.addValueChangeListener(event -> {
 			if (event.getValue() != null) {
+				if(event.getValue().getVersion().equals("All versions")) {
+					grid.getColumnByKey("version").setVisible(true);
+				}else {
+					grid.getColumnByKey("version").setVisible(false);
+				}
 				reportsList = reportService.filterByProjectVersion(selectedProject, event.getValue());
 				grid.setItems(reportsList);
 				distributionBar.setClosed(reportService.getClosedCount(reportsList));
@@ -151,14 +162,14 @@ public class BodyLayout extends VerticalLayout {
 		assigneeDiv.add(assigneeDivText, assigneeTabsMenu);
 		statusDiv.add(statusDivText, statusTabsMenu);
 		filtersLayout.add(assigneeDiv, statusDiv);
-		add(filtersLayout);
-		
-		add(distributionBar);
+		filtersLayout.setWidth("50%");
+		add(filtersLayout);		
 	}
 
 	public void loadReportsGrid() {
 		grid = new Grid<>(Report.class, false);
-		grid.addColumn(Report::getPriority).setHeader("Priority").setSortable(true);
+		grid.addColumn(Report::getVersion).setHeader("Version").setKey("version").setSortable(true);
+		grid.addColumn(createPriorityRenderer()).setHeader("Priority").setSortable(true).setComparator(Report::getPriority);
 		grid.addColumn(Report::getType).setHeader("Type").setSortable(true);
 		grid.addColumn(Report::getSummary).setHeader("Summary").setSortable(true);
 		grid.addColumn(Report::getAssigned).setHeader("Assigned to").setSortable(true);
@@ -166,6 +177,11 @@ public class BodyLayout extends VerticalLayout {
 		grid.addColumn(Report::getReportedTimestamp).setHeader("Reported").setSortable(true);
 		loadReports(selectedProject);
 		add(grid);
+		if(selectedProjectVerion.getVersion().equals("All versions")) {
+			grid.getColumnByKey("version").setVisible(true);
+		}else {
+			grid.getColumnByKey("version").setVisible(false);
+		}
 	}
 
 	public void loadReports(Project project) {
@@ -175,6 +191,13 @@ public class BodyLayout extends VerticalLayout {
 		distributionBar.setUnResolved(reportService.getUnResolvedCount(reportsList));
 		distributionBar.setWidthLayout();
 		grid.setItems(reportsList);
+		System.out.println(reportsList.get(0).getPriority());
+	}
+
+	private Renderer<Report> createPriorityRenderer() {
+	    return LitRenderer.<Report> of(
+	            "<report-priority priority=\"${item.priority}\"></report-priority>")
+	            .withProperty("priority", Report::getPriority);
 	}
 
 	public ReportDetailsLayout getReportDetailsLayout() {

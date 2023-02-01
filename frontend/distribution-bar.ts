@@ -25,7 +25,8 @@ export class DistributionBar extends LitElement {
 		.distributionContainer{
 			display:flex;
 			flex-direction: row;
-			width: 450px;
+			width: 1000px;
+			margin-left: 100px;
 		}
 		.barStructure{
 			min-height:30px;
