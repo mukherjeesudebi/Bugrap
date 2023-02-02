@@ -274,7 +274,8 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 					userDiv.addClassName(LumoUtility.Display.FLEX);
 					userDiv.addClassName(LumoUtility.FlexDirection.ROW);
 					Avatar userAvatar = new Avatar(userDetailsAndTime.getAuthor().getName());
-					userAvatar.setColorIndex(6);
+					userAvatar.getStyle().set("background-color", "#BC8341");
+					userAvatar.getStyle().set("color", "white");
 					userDiv.add(userAvatar);
 					Div userNameTimeDiv = new Div();
 					Div userNameDiv = new Div();

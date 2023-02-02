@@ -12,6 +12,7 @@ import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @PermitAll
 @Route("bugrap")
@@ -38,6 +39,7 @@ public class MainLayout extends SplitLayout {
 		this.securityService = securityService;
 		
 		verticalLayout = new VerticalLayout();
+		verticalLayout.addClassName(LumoUtility.Padding.NONE);
 		reportDetailsLayout = new ReportDetailsLayout(this.reporterDao,this.projectVersionService,this.reportService);
 		
 		addHeader();
@@ -54,6 +56,7 @@ public class MainLayout extends SplitLayout {
 		reportDetailsLayout.connectGrid();
 		reportDetailsLayout.setSelectedProject(this.selectedProject);
 		reportDetailsLayout.createReportDetails();
+		addThemeName("bugrap-main");
 	}
 
 	public void addHeader() {

@@ -1,0 +1,7 @@
+:host([theme~="bugrap-select"]) [part="input-field"] {
+    background-color: white;
+}
+:host([theme~="bugrap-select"]) [part="toggle-button"] {
+   color: #414FBC;
+}
+

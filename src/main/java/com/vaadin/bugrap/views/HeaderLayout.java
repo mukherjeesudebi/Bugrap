@@ -9,11 +9,13 @@ import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.security.SecurityService;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.charts.themes.LumoLightTheme;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.select.SelectVariant;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
@@ -38,6 +40,7 @@ public class HeaderLayout extends HorizontalLayout {
 
 	public void createHeader() {
 		projectSelect = new Select<Project>();
+		projectSelect.addThemeName("bugrap-select");
 		List<Project> allProjectLists = projectDao.getAllProjectsList();
 		this.selectedProject = allProjectLists.get(0);
 		projectSelect.setItems(allProjectLists);
@@ -54,6 +57,8 @@ public class HeaderLayout extends HorizontalLayout {
 		});
 
 		add(projectSelect);
+		addClassName(LumoUtility.Padding.Left.MEDIUM);
+		addClassName(LumoUtility.Padding.Right.MEDIUM);
 
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
 		Icon userIcon = new Icon(VaadinIcon.USER);
@@ -70,6 +75,7 @@ public class HeaderLayout extends HorizontalLayout {
 		 */
 
 		headerHorizontalLayoutRight.add(userIcon, userName, powerOffIcon);
+		headerHorizontalLayoutRight.setAlignItems(Alignment.CENTER);
 		headerHorizontalLayoutRight.addClassName(LumoUtility.TextColor.PRIMARY);
 		add(headerHorizontalLayoutRight);
 

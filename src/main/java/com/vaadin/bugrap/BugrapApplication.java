@@ -10,9 +10,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.vaadin.bugrap.domain.spring.DBTools;
 
+import com.vaadin.flow.component.charts.themes.LumoLightTheme;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 @SpringBootApplication
 @Theme(value = "bugrap")

@@ -5,3 +5,7 @@ html {
 	/*--lumo-primary-text-color: brown;*/
 	--lumo-font-family: montserrat;
 }
+
+vaadin-button{
+	background-color: white;
+}
