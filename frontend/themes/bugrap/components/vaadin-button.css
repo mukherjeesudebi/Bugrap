@@ -1,0 +1,21 @@
+:host([theme~="primary"]) {
+	background-color: #4b5bd6;
+	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+	border: 1px solid gray;
+	cursor: pointer;
+}
+
+:host([theme~="tertiary"]) {
+	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+	border: 1px solid #d6d4d4;
+	cursor: pointer;
+    color: #414fbc;
+    background-color: white !important;
+    padding: 15px;
+}
+
+:host([theme~="bugrap-button-link"]){
+	background-color: white;	
+    cursor: pointer;
+    color: #414fbc;
+}

@@ -1,7 +1,16 @@
 :host([theme~="bugrap-select"]) [part="input-field"] {
-    background-color: white;
+	background-color: white;
 }
+
 :host([theme~="bugrap-select"]) [part="toggle-button"] {
-   color: #414FBC;
+	color: #414FBC;
+}
+
+:host([theme~="bugrap-report-select"]) [part="input-field"] {
+	background-color: white;
+	border: 1px solid #d6d4d4;
+}
+:host([theme~="bugrap-report-select"]) [part="toggle-button"] {
+	color: #414FBC;
 }
 

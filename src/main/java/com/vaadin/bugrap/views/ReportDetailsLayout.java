@@ -53,8 +53,9 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private ProjectVersionService projectVersionService;
 	private ReportService reportService;
 
+	Icon revertIcon = new Icon("lumo", "reload");
 	private Button saveChangesButton = new Button("Save Changes");
-	private Button revertChangesButton = new Button("Revert");
+	private Button revertChangesButton = new Button("Revert", revertIcon);
 	private Report selectedReport;
 
 	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,
@@ -103,23 +104,23 @@ public class ReportDetailsLayout extends VerticalLayout {
 		summaryWithOpen.setWidthFull();
 		reportSummary = new H6();
 		Button openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
-		openButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		openButton.addThemeName("bugrap-button-link");
 		openButton.addClickListener(e -> {
 			/*
 			 * UI.getCurrent().navigate(ReportDetailsSeparateLayout.class) .ifPresent(report
 			 * -> report.setReport(selectedReport));
 			 */
-			//ComponentUtil.setData(UI.getCurrent().getParent().get(), Report.class, selectedReport);
-			//VaadinSession.getCurrent().setAttribute("Report",selectedReport);
-			String url = "/reportDetails/"+selectedReport.getId();
+			// ComponentUtil.setData(UI.getCurrent().getParent().get(), Report.class,
+			// selectedReport);
+			// VaadinSession.getCurrent().setAttribute("Report",selectedReport);
+			String url = "/reportDetails/" + selectedReport.getId();
 			UI.getCurrent().getPage().open(url);
-			
+
 		});
 		summaryWithOpen.add(reportSummary);
 		summaryWithOpen.add(openButton);
 		summaryWithOpen.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		add(summaryWithOpen);
-		
 
 		HorizontalLayout reportPropertieAndAction = new HorizontalLayout();
 		HorizontalLayout propertiesLayout = new HorizontalLayout();
@@ -128,30 +129,38 @@ public class ReportDetailsLayout extends VerticalLayout {
 		prioritySelect = new Select<Priority>();
 		prioritySelect.setItems(Stream.of(Report.Priority.values()).toList());
 		prioritySelect.setLabel("Priority");
+		prioritySelect.addThemeName("bugrap-report-select");
 		propertiesLayout.add(prioritySelect);
 
 		typeSelect = new Select<Type>();
 		typeSelect.setItems(Stream.of(Report.Type.values()).toList());
 		typeSelect.setLabel("Type");
+		typeSelect.addThemeName("bugrap-report-select");
 		propertiesLayout.add(typeSelect);
 
 		statusSelect = new Select<Status>();
 		statusSelect.setItems(Stream.of(Report.Status.values()).toList());
 		statusSelect.setLabel("Status");
+		statusSelect.addThemeName("bugrap-report-select");
 		propertiesLayout.add(statusSelect);
 
 		assignedToSelect = new Select<Reporter>();
 		assignedToSelect.setItems(this.reporterDao.getAllReporters());
 		assignedToSelect.setLabel("Assigned to");
+		assignedToSelect.addThemeName("bugrap-report-select");
 		propertiesLayout.add(assignedToSelect);
 
 		reportprojectVersionSelect = new Select<ProjectVersion>();
 		reportprojectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
 		reportprojectVersionSelect.setLabel("Version");
+		reportprojectVersionSelect.addThemeName("bugrap-report-select");
 		propertiesLayout.add(reportprojectVersionSelect);
 
 		propertiesActionlLayout.add(saveChangesButton);
+		saveChangesButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
 		propertiesActionlLayout.add(revertChangesButton);
+		revertChangesButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		reportPropertieAndAction.add(propertiesLayout);
 		reportPropertieAndAction.add(propertiesActionlLayout);

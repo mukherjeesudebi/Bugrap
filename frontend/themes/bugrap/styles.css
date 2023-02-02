@@ -4,8 +4,13 @@ html {
 	/*--lumo-primary-color: brown;*/
 	/*--lumo-primary-text-color: brown;*/
 	--lumo-font-family: montserrat;
+	--lumo-primary-color: #4b5bd6;
 }
 
-vaadin-button{
-	background-color: white;
+.bugrapUserIcon{
+	height: 20px;
+	width: 20px;
+	color: #414fbc;
 }
+
+

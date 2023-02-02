@@ -62,9 +62,11 @@ public class HeaderLayout extends HorizontalLayout {
 
 		HorizontalLayout headerHorizontalLayoutRight = new HorizontalLayout();
 		Icon userIcon = new Icon(VaadinIcon.USER);
+		userIcon.addClassName("bugrapUserIcon");
 		Div userName = new Div();
 		userName.setText(securityService.getAuthenticatedUser().getName());
 		Button powerOffIcon = new Button("", new Icon(VaadinIcon.POWER_OFF));
+		powerOffIcon.addThemeName("bugrap-button-link");
 		powerOffIcon.addClickListener(event -> {
 			this.logout();
 		});
@@ -76,7 +78,7 @@ public class HeaderLayout extends HorizontalLayout {
 
 		headerHorizontalLayoutRight.add(userIcon, userName, powerOffIcon);
 		headerHorizontalLayoutRight.setAlignItems(Alignment.CENTER);
-		headerHorizontalLayoutRight.addClassName(LumoUtility.TextColor.PRIMARY);
+		headerHorizontalLayoutRight.getStyle().set("color", "#414fbc");
 		add(headerHorizontalLayoutRight);
 
 		setWidthFull();

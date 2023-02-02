@@ -10,6 +10,7 @@ import com.vaadin.bugrap.components.DistributionBar;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Div;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class BodyLayout extends VerticalLayout {
 
@@ -37,8 +39,10 @@ public class BodyLayout extends VerticalLayout {
 
 	private ReportDetailsLayout reportDetailsLayout;
 	private DistributionBar distributionBar = new DistributionBar();
+	VerticalLayout reportingBlockLayout;
 
-	public BodyLayout(ProjectVersionService projectVersionService, ReportService reportService, Project selectedProject) {
+	public BodyLayout(ProjectVersionService projectVersionService, ReportService reportService,
+			Project selectedProject) {
 		this.projectVersionService = projectVersionService;
 		this.reportService = reportService;
 		this.selectedProject = selectedProject;
@@ -58,16 +62,13 @@ public class BodyLayout extends VerticalLayout {
 		HorizontalLayout functionAnsSearchLayout = new HorizontalLayout();
 		HorizontalLayout functionButtonsLayout = new HorizontalLayout();
 		Button bugButton = new Button("Report a bug", new Icon(VaadinIcon.BUG));
-		bugButton.getStyle().set("background-color", "white");
-		bugButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
+		bugButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		Button failureRequestButton = new Button("Request a failure", new Icon(VaadinIcon.LIGHTBULB));
-		failureRequestButton.getStyle().set("background-color", "white");
-		failureRequestButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
+		failureRequestButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		Button manageProjectButton = new Button("Manage Project", new Icon(VaadinIcon.SUN_O));
-		manageProjectButton.getStyle().set("background-color", "white");
-		manageProjectButton.getStyle().set("box-shadow", "rgb(99 99 99 / 25%) 0px 2px 8px -2px");
+		manageProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		functionButtonsLayout.add(bugButton, failureRequestButton, manageProjectButton);
 
@@ -85,10 +86,13 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	public void addReportingBlock() {
+		reportingBlockLayout = new VerticalLayout();
 		loadProjectVersions(selectedProject);
 		loadProjectVersionsWithLabel();
 		addFilters();
 		loadReportsGrid();
+		add(reportingBlockLayout);
+		reportingBlockLayout.getStyle().set("background-color", "white");
 
 	}
 
@@ -99,12 +103,13 @@ public class BodyLayout extends VerticalLayout {
 		versionsLabel.setText("Reports For");
 		projectVersionshorizontalLayout.add(versionsLabel);
 		projectVersionshorizontalLayout.add(projectVersionsSelect);
+		projectVersionsSelect.addThemeName("bugrap-select");
 		projectVersionshorizontalLayout.setAlignItems(Alignment.CENTER);
 		versionAndDistributionLayout.add(projectVersionshorizontalLayout);
 		versionAndDistributionLayout.add(distributionBar);
 		versionAndDistributionLayout.setAlignItems(Alignment.CENTER);
-		add(versionAndDistributionLayout);
-		
+		reportingBlockLayout.add(versionAndDistributionLayout);
+
 	}
 
 	public void loadProjectVersions(Project project) {
@@ -115,9 +120,9 @@ public class BodyLayout extends VerticalLayout {
 		projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
 		projectVersionsSelect.addValueChangeListener(event -> {
 			if (event.getValue() != null) {
-				if(event.getValue().getVersion().equals("All versions")) {
+				if (event.getValue().getVersion().equals("All versions")) {
 					grid.getColumnByKey("version").setVisible(true);
-				}else {
+				} else {
 					grid.getColumnByKey("version").setVisible(false);
 				}
 				reportsList = reportService.filterByProjectVersion(selectedProject, event.getValue());
@@ -163,23 +168,24 @@ public class BodyLayout extends VerticalLayout {
 		statusDiv.add(statusDivText, statusTabsMenu);
 		filtersLayout.add(assigneeDiv, statusDiv);
 		filtersLayout.setWidth("50%");
-		add(filtersLayout);		
+		reportingBlockLayout.add(filtersLayout);
 	}
 
 	public void loadReportsGrid() {
 		grid = new Grid<>(Report.class, false);
 		grid.addColumn(Report::getVersion).setHeader("Version").setKey("version").setSortable(true);
-		grid.addColumn(createPriorityRenderer()).setHeader("Priority").setSortable(true).setComparator(Report::getPriority);
+		grid.addColumn(createPriorityRenderer()).setHeader("Priority").setSortable(true)
+				.setComparator(Report::getPriority);
 		grid.addColumn(Report::getType).setHeader("Type").setSortable(true);
 		grid.addColumn(Report::getSummary).setHeader("Summary").setSortable(true);
 		grid.addColumn(Report::getAssigned).setHeader("Assigned to").setSortable(true);
 		grid.addColumn(Report::getTimestamp).setHeader("Last modified").setSortable(true);
 		grid.addColumn(Report::getReportedTimestamp).setHeader("Reported").setSortable(true);
 		loadReports(selectedProject);
-		add(grid);
-		if(selectedProjectVerion.getVersion().equals("All versions")) {
+		reportingBlockLayout.add(grid);
+		if (selectedProjectVerion.getVersion().equals("All versions")) {
 			grid.getColumnByKey("version").setVisible(true);
-		}else {
+		} else {
 			grid.getColumnByKey("version").setVisible(false);
 		}
 	}
@@ -195,9 +201,8 @@ public class BodyLayout extends VerticalLayout {
 	}
 
 	private Renderer<Report> createPriorityRenderer() {
-	    return LitRenderer.<Report> of(
-	            "<report-priority priority=\"${item.priority}\"></report-priority>")
-	            .withProperty("priority", Report::getPriority);
+		return LitRenderer.<Report>of("<report-priority priority=\"${item.priority}\"></report-priority>")
+				.withProperty("priority", Report::getPriority);
 	}
 
 	public ReportDetailsLayout getReportDetailsLayout() {
