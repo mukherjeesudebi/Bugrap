@@ -1,14 +1,15 @@
 package com.vaadin.bugrap.views;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
@@ -26,6 +27,7 @@ import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.bugrap.security.SecurityService;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -48,6 +50,8 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.shared.ui.colorpicker.Color;
 
 @PermitAll
 @Route("reportDetails")
@@ -248,31 +252,77 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 	}
 
 	public void addExistingComments(VerticalLayout reportDetailsLayout) {
-		List<Comment> comments = commentDao.getAllComments(report);
-		Div commentDiv = new Div();
+		Map<Reporter, List<Comment>> commentsMap = commentDao.getAllComments(report);
 
-		for (Comment comment : comments) {
-			if (comment.getType() == Comment.Type.COMMENT) {
-				Div commentString = new Div();
-				commentString.setText(comment.getComment());
-				commentDiv.add(commentString);
-			} else if (comment.getType() == Comment.Type.ATTACHMENT) {
-				Div attachmentDiv = new Div();
-				//attachment.setText(comment.getAttachmentName());
-				addLinkToFile(comment.getAttachmentName(), comment.getAttachment(),attachmentDiv);
-				commentDiv.add(attachmentDiv);
+		if (commentsMap != null) {
+			for (Map.Entry<Reporter, List<Comment>> comments : commentsMap.entrySet()) {
+				Map<Date, List<Comment>> separatedComments = comments.getValue().stream()
+						.collect(Collectors.groupingBy(Comment::getTimestamp));
+				for (Map.Entry<Date, List<Comment>> singleComment : separatedComments.entrySet()) {
+					HorizontalLayout commentLayout = new HorizontalLayout();
+					commentLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+					
+					Div commentString = new Div();
+					commentString.setWidth("75%");
+					commentString.setClassName(LumoUtility.Padding.MEDIUM);
+					commentLayout.add(commentString);
+
+					VerticalLayout userAttachmentsLayout = new VerticalLayout();
+					Comment userDetailsAndTime = singleComment.getValue().get(0);
+					
+					Div userDiv = new Div();
+					userDiv.addClassName(LumoUtility.Display.FLEX);
+					userDiv.addClassName(LumoUtility.FlexDirection.ROW);
+					Avatar userAvatar = new Avatar(userDetailsAndTime.getAuthor().getName());
+					userAvatar.setColorIndex(6);
+					userDiv.add(userAvatar);
+					Div userNameTimeDiv = new Div();
+					Div userNameDiv = new Div();
+					userNameDiv.setText(userDetailsAndTime.getAuthor().getName());
+					Div timeDiv = new Div();
+					timeDiv.setText("test");
+					userNameTimeDiv.add(userNameDiv,timeDiv);
+					userNameTimeDiv.addClassName(LumoUtility.Display.FLEX);
+					userNameTimeDiv.addClassName(LumoUtility.FlexDirection.COLUMN);
+					userDiv.add(userNameTimeDiv);
+					
+					userAttachmentsLayout.add(userDiv);
+					userAttachmentsLayout.setWidth("25%");
+					
+					commentLayout.add(userAttachmentsLayout);
+					commentLayout.setWidthFull();
+					commentLayout.addClassName(LumoUtility.Border.ALL);
+					
+					
+					for (Comment comment : singleComment.getValue()) {
+						if (comment.getType() == Comment.Type.COMMENT) {
+							commentString.setText(comment.getComment());
+						} else if (comment.getType() == Comment.Type.ATTACHMENT) {
+							Div attachmentDiv = new Div();
+							// attachment.setText(comment.getAttachmentName());
+							addLinkToFile(comment.getAttachmentName(), comment.getAttachment(), attachmentDiv);
+							userAttachmentsLayout.add(attachmentDiv);
+						}
+					}
+
+					reportDetailsLayout.add(commentLayout);
+				}
+
 			}
 		}
 
-		reportDetailsLayout.add(commentDiv);
+	}
+	
+	private void getDuration(Date timestamp) {
+		//Duration.between(LocalDateTime.now(), timestamp.)
 	}
 
-	private void addLinkToFile(String fileName,byte[] attachment,Div attachmentDiv) {
-        StreamResource streamResource = new StreamResource(fileName, ()-> getStream(attachment));
-        Anchor link = new Anchor(streamResource, fileName);
-        link.getElement().setAttribute("download", true);
-        attachmentDiv.add(link);
-    }
+	private void addLinkToFile(String fileName, byte[] attachment, Div attachmentDiv) {
+		StreamResource streamResource = new StreamResource(fileName, () -> getStream(attachment));
+		Anchor link = new Anchor(streamResource, fileName);
+		link.getElement().setAttribute("download", true);
+		attachmentDiv.add(link);
+	}
 
 	private InputStream getStream(byte[] attachment) {
 		return new ByteArrayInputStream(attachment);
@@ -311,7 +361,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 	}
 
 	public void showAllComments() {
-		List<Comment> comments = commentDao.getAllComments(report);
+		// List<Comment> comments = commentDao.getAllComments(report);
 
 	}
 
