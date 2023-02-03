@@ -43,7 +43,6 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private Select<Status> statusSelect;
 	private Select<Reporter> assignedToSelect;
 	private Select<ProjectVersion> reportprojectVersionSelect;
-	private Div descriptionDiv;
 
 	private ReporterDao reporterDao;
 	private Project selectedProject;
@@ -55,6 +54,8 @@ public class ReportDetailsLayout extends VerticalLayout {
 	private Button saveChangesButton = new Button("Save Changes");
 	private Button revertChangesButton = new Button("Revert", revertIcon);
 	private Report selectedReport;
+	private Button openButton;
+	private Set<Report> selectedReports;
 
 	public ReportDetailsLayout(ReporterDao reporterDao, ProjectVersionService projectVersionService,
 			ReportService reportService) {
@@ -68,38 +69,48 @@ public class ReportDetailsLayout extends VerticalLayout {
 		gridDataView = grid.getGenericDataView();
 		grid.asMultiSelect().addValueChangeListener(event -> {
 			if (event.getValue() != null) {
-				Set<Report> selectedReports = event.getValue();
-				if(selectedReports.size()==1) {
-				selectedReport = selectedReports.stream().toList().get(0);
-				reportSummary.setText(selectedReport.getSummary());
-				descriptionDiv.setText(selectedReport.getDescription());
-				reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
-				reportBinder.bind(typeSelect, Report::getType, Report::setType);
-				reportBinder.bind(statusSelect, Report::getStatus, Report::setStatus);
-				reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
-				reportBinder.bind(reportprojectVersionSelect, Report::getVersion, Report::setVersion);
-				reportBinder.readBean(selectedReport);
+				selectedReports = event.getValue();
+				if (selectedReports.size() == 1) {
+					selectedReport = selectedReports.stream().toList().get(0);
+					reportSummary.setText(selectedReport.getSummary());
+					reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
+					reportBinder.bind(typeSelect, Report::getType, Report::setType);
+					reportBinder.bind(statusSelect, Report::getStatus, Report::setStatus);
+					reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
+					reportBinder.bind(reportprojectVersionSelect, Report::getVersion, Report::setVersion);
+					reportBinder.readBean(selectedReport);
+					openButton.setVisible(true);
+				} else {
+					int count = selectedReports.size();
+					reportSummary.setText(count + " reports Selected.");
+					reportBinder.readBean(null);
+					openButton.setVisible(false);
 				}
 			}
 		});
 		grid.addItemClickListener(e -> {
-			  grid.asMultiSelect().select(e.getItem());
-			});
+			grid.asMultiSelect().select(e.getItem());
+		});
 		saveChangesButton.addClickListener(event -> {
 			try {
-				reportBinder.writeBean(selectedReport);
-				this.reportService.saveUpdatedReportDetails(selectedReport);
-				gridDataView.refreshItem(selectedReport);
+				for (Report report : selectedReports) {
+					reportBinder.writeBean(report);
+					this.reportService.saveUpdatedReportDetails(report);
+					gridDataView.refreshItem(report);
+				}
 				Notification successNotification = Notification.show("Report Details Saved Successfully", 3000,
 						Position.MIDDLE);
 				successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				reportBinder.writeBean(null);
 			} catch (ValidationException e) {
 				e.printStackTrace();
 			}
 		});
 		revertChangesButton.addClickListener(event -> {
-			reportBinder.readBean(selectedReport);
-			gridDataView.refreshItem(selectedReport);
+			for (Report report : selectedReports) {
+				reportBinder.readBean(report);
+				gridDataView.refreshItem(report);
+			}
 		});
 	}
 
@@ -107,16 +118,9 @@ public class ReportDetailsLayout extends VerticalLayout {
 		HorizontalLayout summaryWithOpen = new HorizontalLayout();
 		summaryWithOpen.setWidthFull();
 		reportSummary = new H6();
-		Button openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
+		openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
 		openButton.addThemeName("bugrap-button-link");
 		openButton.addClickListener(e -> {
-			/*
-			 * UI.getCurrent().navigate(ReportDetailsSeparateLayout.class) .ifPresent(report
-			 * -> report.setReport(selectedReport));
-			 */
-			// ComponentUtil.setData(UI.getCurrent().getParent().get(), Report.class,
-			// selectedReport);
-			// VaadinSession.getCurrent().setAttribute("Report",selectedReport);
 			String url = "/reportDetails/" + selectedReport.getId();
 			UI.getCurrent().getPage().open(url);
 
@@ -172,9 +176,6 @@ public class ReportDetailsLayout extends VerticalLayout {
 		reportPropertieAndAction.setJustifyContentMode(JustifyContentMode.BETWEEN);
 		reportPropertieAndAction.setWidthFull();
 		add(reportPropertieAndAction);
-
-		descriptionDiv = new Div();
-		add(descriptionDiv);
 
 	}
 
