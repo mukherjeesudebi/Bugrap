@@ -1,5 +1,6 @@
 package com.vaadin.bugrap.views;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.vaadin.bugrap.domain.entities.Project;
@@ -13,7 +14,6 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 import com.vaadin.bugrap.dao.ReporterDao;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
-import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -31,8 +31,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.server.BrowserWindowOpener;
 
 public class ReportDetailsLayout extends VerticalLayout {
 
@@ -68,9 +66,11 @@ public class ReportDetailsLayout extends VerticalLayout {
 
 	public void connectGrid() {
 		gridDataView = grid.getGenericDataView();
-		grid.asSingleSelect().addValueChangeListener(event -> {
+		grid.asMultiSelect().addValueChangeListener(event -> {
 			if (event.getValue() != null) {
-				selectedReport = event.getValue();
+				Set<Report> selectedReports = event.getValue();
+				if(selectedReports.size()==1) {
+				selectedReport = selectedReports.stream().toList().get(0);
 				reportSummary.setText(selectedReport.getSummary());
 				descriptionDiv.setText(selectedReport.getDescription());
 				reportBinder.bind(prioritySelect, Report::getPriority, Report::setPriority);
@@ -79,8 +79,12 @@ public class ReportDetailsLayout extends VerticalLayout {
 				reportBinder.bind(assignedToSelect, Report::getAssigned, Report::setAssigned);
 				reportBinder.bind(reportprojectVersionSelect, Report::getVersion, Report::setVersion);
 				reportBinder.readBean(selectedReport);
+				}
 			}
 		});
+		grid.addItemClickListener(e -> {
+			  grid.asMultiSelect().select(e.getItem());
+			});
 		saveChangesButton.addClickListener(event -> {
 			try {
 				reportBinder.writeBean(selectedReport);

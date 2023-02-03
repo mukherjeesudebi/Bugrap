@@ -11,8 +11,9 @@ import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -21,9 +22,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class BodyLayout extends VerticalLayout {
 
@@ -173,6 +174,8 @@ public class BodyLayout extends VerticalLayout {
 
 	public void loadReportsGrid() {
 		grid = new Grid<>(Report.class, false);
+		grid.setSelectionMode(SelectionMode.MULTI);
+		//grid.addColumn(createCheckBoxRenderer()).setKey("reportCheckbox");
 		grid.addColumn(Report::getVersion).setHeader("Version").setKey("version").setSortable(true);
 		grid.addColumn(createPriorityRenderer()).setHeader("Priority").setSortable(true)
 				.setComparator(Report::getPriority);
@@ -188,6 +191,12 @@ public class BodyLayout extends VerticalLayout {
 		} else {
 			grid.getColumnByKey("version").setVisible(false);
 		}
+	}
+
+	public ComponentRenderer<Checkbox, Report> createCheckBoxRenderer() {
+		return new ComponentRenderer<>(report -> {
+			return new Checkbox();
+		});
 	}
 
 	public void loadReports(Project project) {
