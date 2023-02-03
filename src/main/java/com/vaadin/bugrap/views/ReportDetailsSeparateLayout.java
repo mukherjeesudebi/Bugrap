@@ -29,6 +29,7 @@ import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H6;
@@ -75,6 +76,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		reportBinder = new Binder<>(Report.class);
 		this.commentDao = commentDao;
 		this.securityService = securityService;
+		addClassName(LumoUtility.Padding.NONE);
 	}
 
 	@Override
@@ -98,13 +100,20 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 
 		Div projectName = new Div();
 		projectName.setText(report.getProject().getName());
+		projectName.addClassName("projectName");
 		Div projectVersion = new Div();
 		projectVersion.setText(report.getVersion() != null ? report.getVersion().getVersion() : "");
+		projectVersion.addClassName("projectVersion");
 		projectNameAndVersion.add(projectName, projectVersion);
-		reportDetailsLayout.add(projectNameAndVersion);
+		projectNameAndVersion.setWidthFull();
+		projectNameAndVersion.addClassName(LumoUtility.BoxShadow.MEDIUM);
+		add(projectNameAndVersion);
+		
+		reportDetailsLayout.addClassName(LumoUtility.Padding.NONE);
 
-		H6 reportSummary = new H6();
+		Div reportSummary = new Div();
 		reportSummary.setText(report.getSummary());
+		reportSummary.addClassName(LumoUtility.FontWeight.BOLD);
 		reportDetailsLayout.add(reportSummary);
 
 		HorizontalLayout reportPropertieAndAction = new HorizontalLayout();
@@ -114,30 +123,39 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		Select<Priority> prioritySelect = new Select<Priority>();
 		prioritySelect.setItems(Stream.of(Report.Priority.values()).toList());
 		prioritySelect.setLabel("Priority");
+		prioritySelect.addThemeName("bugrap-report-select");		
 		propertiesLayout.add(prioritySelect);
 
 		Select<Type> typeSelect = new Select<Type>();
 		typeSelect.setItems(Stream.of(Report.Type.values()).toList());
 		typeSelect.setLabel("Type");
+		typeSelect.addThemeName("bugrap-report-select");	
 		propertiesLayout.add(typeSelect);
 
 		Select<Status> statusSelect = new Select<Status>();
 		statusSelect.setItems(Stream.of(Report.Status.values()).toList());
 		statusSelect.setLabel("Status");
+		statusSelect.addThemeName("bugrap-report-select");	
 		propertiesLayout.add(statusSelect);
 
 		Select<Reporter> assignedToSelect = new Select<Reporter>();
 		assignedToSelect.setItems(this.reporterDao.getAllReporters());
 		assignedToSelect.setLabel("Assigned to");
+		assignedToSelect.addThemeName("bugrap-report-select");	
 		propertiesLayout.add(assignedToSelect);
 
 		Select<ProjectVersion> reportprojectVersionSelect = new Select<ProjectVersion>();
 		reportprojectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.report.getProject()));
 		reportprojectVersionSelect.setLabel("Version");
+		reportprojectVersionSelect.addThemeName("bugrap-report-select");	
 		propertiesLayout.add(reportprojectVersionSelect);
 
 		Button saveChangesButton = new Button("Save changes");
-		Button revertChangesButton = new Button("Revert");
+		saveChangesButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		
+		Icon revertIcon = new Icon("lumo", "reload");
+		Button revertChangesButton = new Button("Revert", revertIcon);
+		revertChangesButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 		propertiesActionlLayout.add(saveChangesButton);
 		propertiesActionlLayout.add(revertChangesButton);
@@ -177,7 +195,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		});
 
 		addExistingComments(reportDetailsLayout);
-
+		reportDetailsLayout.addClassName("reportDetailsLayout");
 		add(reportDetailsLayout);
 
 	}
@@ -196,8 +214,10 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		HorizontalLayout commentButtonsDiv = new HorizontalLayout();
 		Icon checkmarkLumoIcon = new Icon("lumo", "checkmark");
 		Button addCommentButton = new Button("Comment", checkmarkLumoIcon);
+		addCommentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		Icon crossLumoIcon = new Icon("lumo", "cross");
 		Button cancelButton = new Button("Cancel", crossLumoIcon);
+		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		commentButtonsDiv.add(addCommentButton, cancelButton);
 		editorLayout.add(commentButtonsDiv);
 
@@ -241,7 +261,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 		commentsAttachmentsLayout.add(attachmentsLayout);
 		commentsAttachmentsLayout.setWidthFull();
 		commentsAttachmentsLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-		commentsAttachmentsLayout.getStyle().set("background-color", "#f0f0f0");
+		commentsAttachmentsLayout.getStyle().set("background-color", "#d3d3d3");
 
 		addCommentButton.addClickListener(event -> {
 			createNewComment(buffer);
@@ -293,6 +313,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 					commentLayout.add(userAttachmentsLayout);
 					commentLayout.setWidthFull();
 					commentLayout.addClassName(LumoUtility.Border.ALL);
+					commentLayout.addClassName("commentLayout");
 					
 					
 					for (Comment comment : singleComment.getValue()) {
@@ -358,6 +379,10 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 			comment.setAuthor(securityService.getAuthenticatedUser());
 			commentDao.saveComment(comment);
 		}
+		
+		Notification successNotification = Notification.show("Comment Saved Successfully", 3000,
+				Position.MIDDLE);
+		successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
 	}
 

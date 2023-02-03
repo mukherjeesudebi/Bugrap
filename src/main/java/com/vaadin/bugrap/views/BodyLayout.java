@@ -174,6 +174,7 @@ public class BodyLayout extends VerticalLayout {
 
 	public void loadReportsGrid() {
 		grid = new Grid<>(Report.class, false);
+		grid.addThemeName("bugrap-grid");
 		grid.setSelectionMode(SelectionMode.MULTI);
 		//grid.addColumn(createCheckBoxRenderer()).setKey("reportCheckbox");
 		grid.addColumn(Report::getVersion).setHeader("Version").setKey("version").setSortable(true);

@@ -1,16 +1,51 @@
 /* Import your application global css files here or add the styles directly to this file */
-
 html {
 	/*--lumo-primary-color: brown;*/
-	/*--lumo-primary-text-color: brown;*/
-	--lumo-font-family: montserrat;
-	--lumo-primary-color: #4b5bd6;
+	/*--lumo-primary-text-color: brown;*/ 
+	-lumo-font-family: montserrat; 
+	-lumo-primary-color: #4b5bd6;
 }
 
-.bugrapUserIcon{
+.bugrapUserIcon {
 	height: 20px;
 	width: 20px;
 	color: #414fbc;
 }
 
+.projectName {
+	width: 50%;
+	background-color: #0a8bae;
+	color: white;
+	padding: 10px 20px;
+	font-weight: bold;
+	border-radius: 0px 45px 45px 0px;
+}
 
+.projectName:after {
+	content: "";
+	position: fixed;
+	left: 49%;
+	top: 0%;
+	border-left: 23.5px solid transparent;
+	border-bottom: 23.5px solid white;
+	border-right: 23.5px solid white;
+	border-top: 23.5px solid white;
+}
+
+.reportDetailsLayout {
+	width: 100%;
+	overflow-y: scroll;
+	height: 100%;
+	padding: 0px 20px;
+	background-color: #f0f0f0;
+}
+
+.projectVersion {
+	width: 45%;
+	padding: 10px 20px;
+}
+
+.commentLayout{
+	background-color: white;
+	border: 1px solid #d6d4d4;
+}

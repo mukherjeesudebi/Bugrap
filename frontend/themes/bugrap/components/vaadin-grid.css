@@ -1,0 +1,4 @@
+:host([theme~="bugrap-grid"]) [part="cell header-cell"] [id="vaadin-grid-cell-0"]{
+	visibility: hidden;
+}
+
