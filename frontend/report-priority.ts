@@ -7,10 +7,10 @@ export class ReportPriority extends LitElement {
 
 	static get styles() {
 		return css`
-		.priorityContainer{
+		.priority-container{
 			display:flex;
 		}
-		.priorityColumn{
+		.priority-column{
 			height:30px;
 			width: 7px;
    			background-color: rgb(10, 139, 174);
@@ -20,13 +20,13 @@ export class ReportPriority extends LitElement {
 		`;
 	}
 	render() {		
-		return html`<div class="priorityContainer">
-		    <div class="priorityColumn" style="display:${this.getDisplay(0,this.priority)};"></div>
-			<div class="priorityColumn" style="display:${this.getDisplay(1,this.priority)};"></div>
-			<div class="priorityColumn" style="display:${this.getDisplay(2,this.priority)};"></div>
-			<div class="priorityColumn" style="display:${this.getDisplay(3,this.priority)};"></div>
-			<div class="priorityColumn" style="display:${this.getDisplay(4,this.priority)};"></div>
-			<div class="priorityColumn" style="display:${this.getDisplay(5,this.priority)};"></div>
+		return html`<div class="priority-container">
+		    <div class="priority-column" style="display:${this.getDisplay(0,this.priority)};"></div>
+			<div class="priority-column" style="display:${this.getDisplay(1,this.priority)};"></div>
+			<div class="priority-column" style="display:${this.getDisplay(2,this.priority)};"></div>
+			<div class="priority-column" style="display:${this.getDisplay(3,this.priority)};"></div>
+			<div class="priority-column" style="display:${this.getDisplay(4,this.priority)};"></div>
+			<div class="priority-column" style="display:${this.getDisplay(5,this.priority)};"></div>
 		</div>
 		`;
 	}
