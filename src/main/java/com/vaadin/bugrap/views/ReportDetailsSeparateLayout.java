@@ -68,7 +68,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
     private CommentDao commentDao;
     private RichTextEditor richTextEditor;
     private SecurityService securityService;
-    private HorizontalLayout commentLayout;
+    private VerticalLayout commentLayout;
     private VerticalLayout reportDetailsLayout;
 
     public ReportDetailsSeparateLayout(ReporterDao reporterDao,
@@ -82,7 +82,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
         this.commentDao = commentDao;
         this.securityService = securityService;
         addClassName(LumoUtility.Padding.NONE);
-        commentLayout = new HorizontalLayout();
+        commentLayout = new VerticalLayout();
     }
 
     @Override
@@ -301,8 +301,8 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 
         if (commentsMap != null) {
             this.reportDetailsLayout.remove(commentLayout);
-            commentLayout = new HorizontalLayout();
-            
+            commentLayout = new VerticalLayout();
+
             for (Map.Entry<Reporter, List<Comment>> comments : commentsMap
                     .entrySet()) {
                 Map<Date, List<Comment>> separatedComments = comments.getValue()
@@ -310,13 +310,14 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
                         .collect(Collectors.groupingBy(Comment::getTimestamp));
                 for (Map.Entry<Date, List<Comment>> singleComment : separatedComments
                         .entrySet()) {
-                    commentLayout
-                            .setJustifyContentMode(JustifyContentMode.BETWEEN);
-
+                    HorizontalLayout singleCommentLayout = new HorizontalLayout();
+                    singleCommentLayout.setWidthFull();
+                    singleCommentLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+                    
                     Div commentString = new Div();
                     commentString.setWidth("75%");
                     commentString.setClassName(LumoUtility.Padding.MEDIUM);
-                    commentLayout.add(commentString);
+                    singleCommentLayout.add(commentString);
 
                     VerticalLayout userAttachmentsLayout = new VerticalLayout();
                     Comment userDetailsAndTime = singleComment.getValue()
@@ -349,10 +350,10 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
                     userAttachmentsLayout.add(userDiv);
                     userAttachmentsLayout.setWidth("25%");
 
-                    commentLayout.add(userAttachmentsLayout);
-                    commentLayout.setWidthFull();
-                    commentLayout.addClassName(LumoUtility.Border.ALL);
-                    commentLayout.addClassName("commentLayout");
+                    singleCommentLayout.add(userAttachmentsLayout);
+                    singleCommentLayout.setWidthFull();
+                    singleCommentLayout.addClassName(LumoUtility.Border.ALL);
+                    singleCommentLayout.addClassName("commentLayout");
 
                     for (Comment comment : singleComment.getValue()) {
                         if (comment.getType() == Comment.Type.COMMENT) {
@@ -371,11 +372,12 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
                             userAttachmentsLayout.add(attachmentDiv);
                         }
                     }
+                    commentLayout.add(singleCommentLayout);
 
-                    this.reportDetailsLayout.add(commentLayout);
                 }
 
             }
+            this.reportDetailsLayout.add(commentLayout);
         }
 
     }
