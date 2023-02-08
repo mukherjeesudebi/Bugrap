@@ -43,8 +43,8 @@ public class LoginLayout extends VerticalLayout {
 			Authentication auth = new PreAuthenticatedAuthenticationToken(user, null);
 			auth.setAuthenticated(true);
 			SecurityContextHolder.getContext().setAuthentication(auth);
-			//UI.getCurrent().navigate(MainLayout.class);
-			UI.getCurrent().navigate(DistributionBarLayout.class);
+			UI.getCurrent().navigate(MainLayout.class);
+			//UI.getCurrent().navigate(DistributionBarLayout.class);
 			}
 		}
 	}

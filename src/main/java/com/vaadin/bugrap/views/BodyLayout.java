@@ -123,6 +123,7 @@ public class BodyLayout extends VerticalLayout {
         selectedProjectVerion = projectVersionsList.get(0);
         projectVersionsSelect.setItems(projectVersionsList);
         projectVersionsSelect.setValue(selectedProjectVerion);
+        projectVersionsSelect.setId("projectVersionsSelect");
         projectVersionsSelect.setItemLabelGenerator(ProjectVersion::getVersion);
         projectVersionsSelect.addValueChangeListener(event -> {
             if (event.getValue() != null) {

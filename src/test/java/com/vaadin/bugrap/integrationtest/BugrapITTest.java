@@ -33,7 +33,7 @@ import com.vaadin.testbench.TestBenchTestCase;
  * "https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin
  * TestBench</a>.
  */
-public abstract class DistributionBarLayoutTest extends TestBenchTestCase {
+public abstract class BugrapITTest extends TestBenchTestCase {
     private static final int SERVER_PORT = 8080;
 
     private final String route;
@@ -47,11 +47,11 @@ public abstract class DistributionBarLayoutTest extends TestBenchTestCase {
         WebDriverManager.chromedriver().setup();
     }
 
-    public DistributionBarLayoutTest() {
+    public BugrapITTest() {
         this("");
     }
 
-    protected DistributionBarLayoutTest(String route) {
+    protected BugrapITTest(String route) {
         this.route = route;
     }
 

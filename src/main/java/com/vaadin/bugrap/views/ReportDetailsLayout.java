@@ -138,32 +138,38 @@ public class ReportDetailsLayout extends VerticalLayout {
 		prioritySelect.setItems(Stream.of(Report.Priority.values()).toList());
 		prioritySelect.setLabel("Priority");
 		prioritySelect.addThemeName("bugrap-report-select");
+		prioritySelect.setId("prioritySelect");
 		propertiesLayout.add(prioritySelect);
 
 		typeSelect = new Select<Type>();
 		typeSelect.setItems(Stream.of(Report.Type.values()).toList());
 		typeSelect.setLabel("Type");
 		typeSelect.addThemeName("bugrap-report-select");
+		typeSelect.setId("typeSelect");
 		propertiesLayout.add(typeSelect);
 
 		statusSelect = new Select<Status>();
 		statusSelect.setItems(Stream.of(Report.Status.values()).toList());
 		statusSelect.setLabel("Status");
 		statusSelect.addThemeName("bugrap-report-select");
+		statusSelect.setId("statusSelect");
 		propertiesLayout.add(statusSelect);
 
 		assignedToSelect = new Select<Reporter>();
 		assignedToSelect.setItems(this.reporterDao.getAllReporters());
 		assignedToSelect.setLabel("Assigned to");
 		assignedToSelect.addThemeName("bugrap-report-select");
+		assignedToSelect.setId("assignedToSelect");
 		propertiesLayout.add(assignedToSelect);
 
 		reportprojectVersionSelect = new Select<ProjectVersion>();
 		reportprojectVersionSelect.setItems(this.projectVersionService.getAllProjectVersions(this.selectedProject));
 		reportprojectVersionSelect.setLabel("Version");
 		reportprojectVersionSelect.addThemeName("bugrap-report-select");
+		reportprojectVersionSelect.setId("reportprojectVersionSelect");
 		propertiesLayout.add(reportprojectVersionSelect);
 
+		saveChangesButton.setId("saveChangesButton");
 		propertiesActionlLayout.add(saveChangesButton);
 		saveChangesButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
