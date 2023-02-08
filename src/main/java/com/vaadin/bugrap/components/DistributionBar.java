@@ -7,79 +7,93 @@ import com.vaadin.flow.component.dependency.JsModule;
 @Tag("distribution-bar")
 @JsModule("./distribution-bar.ts")
 public class DistributionBar extends Component {
-	private Integer closed;
-	private Integer unAssigned;
-	private Integer unResolved;
-	private String closedWidth;
-	private String unResolvedWidth;
-	private String unAssignedWidth;
+    private Integer closed;
+    private Integer unAssigned;
+    private Integer unResolved;
+    private String closedWidth;
+    private String unResolvedWidth;
+    private String unAssignedWidth;
 
-	public Integer getClosed() {
-		return closed;
-	}
+    public DistributionBar() {
+        closed = 0;
+        unAssigned = 0;
+        unResolved = 0;
+    }
 
-	public void setClosed(Integer closed) {
-		this.closed = closed;
-		getElement().setProperty("closed", this.closed);
-	}
+    public Integer getClosed() {
+        return closed;
+    }
 
-	public Integer getUnAssigned() {
-		return unAssigned;
-	}
+    public void setClosed(Integer closed) {
+        this.closed = closed;
+        getElement().setProperty("closed", this.closed);
+        setWidthLayout();
+    }
 
-	public void setUnAssigned(Integer unAssigned) {
-		this.unAssigned = unAssigned;
-		getElement().setProperty("unAssigned", this.unAssigned);
-	}
+    public Integer getUnAssigned() {
+        return unAssigned;
+    }
 
-	public Integer getUnResolved() {
-		return unResolved;
-	}
+    public void setUnAssigned(Integer unAssigned) {
+        this.unAssigned = unAssigned;
+        getElement().setProperty("unAssigned", this.unAssigned);
+        setWidthLayout();
+    }
 
-	public void setUnResolved(Integer unResolved) {
-		this.unResolved = unResolved;
-		getElement().setProperty("unResolved", this.unResolved);
-	}
+    public Integer getUnResolved() {
+        return unResolved;
+    }
 
-	public String getClosedWidth() {
-		return closedWidth;
-	}
+    public void setUnResolved(Integer unResolved) {
+        this.unResolved = unResolved;
+        getElement().setProperty("unResolved", this.unResolved);
+        setWidthLayout();
+    }
 
-	public void setClosedWidth(String closedWidth) {
-		this.closedWidth = closedWidth;
-		getElement().setProperty("closedWidth", this.closedWidth);
-	}
+    public String getClosedWidth() {
+        return closedWidth;
+    }
 
-	public String getUnResolvedWidth() {
-		return unResolvedWidth;
-	}
+    public void setClosedWidth(String closedWidth) {
+        this.closedWidth = closedWidth;
+        getElement().setProperty("closedWidth", this.closedWidth);
+    }
 
-	public void setUnResolvedWidth(String unResolvedWidth) {
-		this.unResolvedWidth = unResolvedWidth;
-		getElement().setProperty("unResolvedWidth", this.unResolvedWidth);
-	}
+    public String getUnResolvedWidth() {
+        return unResolvedWidth;
+    }
 
-	public String getUnAssignedWidth() {
-		return unAssignedWidth;
-	}
+    public void setUnResolvedWidth(String unResolvedWidth) {
+        this.unResolvedWidth = unResolvedWidth;
+        getElement().setProperty("unResolvedWidth", this.unResolvedWidth);
+    }
 
-	public void setUnAssignedWidth(String unAssignedWidth) {
-		this.unAssignedWidth = unAssignedWidth;
-		getElement().setProperty("unAssignedWidth", this.unAssignedWidth);
-	}
+    public String getUnAssignedWidth() {
+        return unAssignedWidth;
+    }
 
-	public void setWidthLayout() {
-		int totalCount = this.closed + this.unAssigned + this.unResolved;
-		if (totalCount >= 13) {
-			this.setClosedWidth(Math.round(((float) this.closed / totalCount) * 100) + "%");
-			this.setUnResolvedWidth(Math.round(((float) this.unResolved / totalCount) * 100) + "%");
-			this.setUnAssignedWidth(Math.round(((float) this.unAssigned / totalCount) * 100) + "%");
-		} else {
-			this.setClosedWidth(this.closed * 30 + "px");
-			this.setUnResolvedWidth(this.unResolved * 30 + "px");
-			this.setUnAssignedWidth(this.unAssigned * 30 + "px");
-		}
+    public void setUnAssignedWidth(String unAssignedWidth) {
+        this.unAssignedWidth = unAssignedWidth;
+        getElement().setProperty("unAssignedWidth", this.unAssignedWidth);
+    }
 
-	}
+    public void setWidthLayout() {
+        int totalCount = this.closed + this.unAssigned + this.unResolved;
+        if (totalCount >= 13) {
+            this.setClosedWidth(
+                    Math.round(((float) this.closed / totalCount) * 100) + "%");
+            this.setUnResolvedWidth(
+                    Math.round(((float) this.unResolved / totalCount) * 100)
+                            + "%");
+            this.setUnAssignedWidth(
+                    Math.round(((float) this.unAssigned / totalCount) * 100)
+                            + "%");
+        } else {
+            this.setClosedWidth(this.closed * 30 + "px");
+            this.setUnResolvedWidth(this.unResolved * 30 + "px");
+            this.setUnAssignedWidth(this.unAssigned * 30 + "px");
+        }
+
+    }
 
 }

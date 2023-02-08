@@ -221,7 +221,7 @@ public class BodyLayout extends VerticalLayout {
                 .setUnAssigned(reportService.getUnassignedCount(reportsList));
         distributionBar
                 .setUnResolved(reportService.getUnResolvedCount(reportsList));
-        distributionBar.setWidthLayout();
+       // distributionBar.setWidthLayout();
         grid.setItems(reportsList);
         System.out.println(reportsList.get(0).getPriority());
     }

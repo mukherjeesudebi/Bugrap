@@ -101,7 +101,7 @@ public class ReportDetailsLayout extends VerticalLayout {
 				Notification successNotification = Notification.show("Report Details Saved Successfully", 3000,
 						Position.MIDDLE);
 				successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				reportBinder.writeBean(null);
+				reportBinder.writeBean(new Report());
 			} catch (ValidationException e) {
 				e.printStackTrace();
 			}
