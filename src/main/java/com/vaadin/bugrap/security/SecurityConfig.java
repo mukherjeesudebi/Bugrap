@@ -7,15 +7,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import com.vaadin.bugrap.views.LoginLayout;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 
-@EnableWebSecurity 
+@EnableWebSecurity
 @Configuration
-public class SecurityConfig extends VaadinWebSecurity{
-	 @Override
-	    protected void configure(HttpSecurity http) throws Exception {
-	        http.authorizeRequests().antMatchers("/images/**").permitAll(); 
+public class SecurityConfig extends VaadinWebSecurity {
+    public static final String LOGOUT_URL = "/";
 
-	        super.configure(http);
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/images/**").permitAll();
 
-	        setLoginView(http, LoginLayout.class); 
-	    }
+        super.configure(http);
+
+        setLoginView(http, LoginLayout.class);
+    }
 }
