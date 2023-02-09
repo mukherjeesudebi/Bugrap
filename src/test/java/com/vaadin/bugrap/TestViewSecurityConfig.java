@@ -1,15 +1,20 @@
 package com.vaadin.bugrap;
 
+import java.util.Optional;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.bugrap.domain.entities.Reporter;
 
 import com.vaadin.bugrap.dao.MockProjectDaoImpl;
 import com.vaadin.bugrap.dao.MockReporterDaoImpl;
 import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ReporterDao;
-import com.vaadin.bugrap.security.MockSecurityServiceImpl;
-import com.vaadin.bugrap.security.SecurityService;
+import com.vaadin.bugrap.security.AuthenticatedUser;
 import com.vaadin.bugrap.service.MockProjectVersionServiceImpl;
 import com.vaadin.bugrap.service.MockReportServiceImpl;
 import com.vaadin.bugrap.service.ProjectVersionService;
@@ -38,12 +43,34 @@ public class TestViewSecurityConfig {
     }
 
     @Bean
-    SecurityService getSecurityService() {
-        return new MockSecurityServiceImpl();
+    AuthenticatedUser mockAuthenticatedUser() {
+        return new MockAuthenticatedUser();
     }
 
-    @Bean
-    Reporter mockAuthenticatedUser() {
-        return new Reporter();
+    // Dummy authenticated user is needed to satifisfy injection, user is
+    // actually faked by @WithMockUser
+    public class MockAuthenticatedUser implements AuthenticatedUser {
+        private Optional<Authentication> getAuthentication() {
+            SecurityContext context = SecurityContextHolder.getContext();
+            return Optional.ofNullable(context.getAuthentication()).filter(
+                    authentication -> !(authentication instanceof AnonymousAuthenticationToken));
+        }
+
+        @Override
+        public Optional<Reporter> get() {
+            if (!getAuthentication().isEmpty()) {
+                Authentication auth = getAuthentication().get();
+                Reporter reporter = new Reporter();
+                reporter.setName(auth.getName());
+                return Optional.of(reporter);
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        @Override
+        public void logout() {
+        }
+
     }
 }

@@ -6,8 +6,7 @@ import org.vaadin.bugrap.domain.entities.Project;
 
 import com.vaadin.bugrap.dao.ProjectDao;
 import com.vaadin.bugrap.dao.ReporterDao;
-import com.vaadin.bugrap.security.AuthenticatedUserImpl;
-import com.vaadin.bugrap.security.SecurityService;
+import com.vaadin.bugrap.security.AuthenticatedUser;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -35,18 +34,16 @@ public class MainLayout extends SplitLayout {
     private Project selectedProject;
     private VerticalLayout verticalLayout;
     private ReportDetailsLayout reportDetailsLayout;
-    private SecurityService securityService;
-    private AuthenticatedUserImpl authenticatedUserImpl;
+    private AuthenticatedUser authenticatedUserImpl;
 
     public MainLayout(ProjectDao projectDao,
             ProjectVersionService projectVersionService,
             ReportService reportService, ReporterDao reporterDao,
-            SecurityService securityService,AuthenticatedUserImpl authenticatedUserImpl) {
+            AuthenticatedUser authenticatedUserImpl) {
         this.projectDao = projectDao;
         this.projectVersionService = projectVersionService;
         this.reportService = reportService;
         this.reporterDao = reporterDao;
-        this.securityService = securityService;
         this.authenticatedUserImpl = authenticatedUserImpl;
 
         verticalLayout = new VerticalLayout();
@@ -73,7 +70,7 @@ public class MainLayout extends SplitLayout {
 
     public void addHeader() {
         headerLayout = new HeaderLayout(projectDao, projectVersionService,
-                securityService,authenticatedUserImpl);
+               authenticatedUserImpl);
         verticalLayout.add(headerLayout);
         selectedProject = headerLayout.getSelectedProject();
     }

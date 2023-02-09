@@ -3,15 +3,14 @@ package com.vaadin.bugrap.views;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.vaadin.bugrap.domain.entities.ProjectVersion;
 import org.vaadin.bugrap.domain.entities.Report;
 import org.vaadin.bugrap.domain.entities.Reporter;
 
 import com.vaadin.bugrap.TestViewSecurityConfig;
-import com.vaadin.bugrap.security.MockSecurityServiceImpl;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridTester;
 import com.vaadin.flow.component.select.Select;
@@ -21,6 +20,7 @@ import com.vaadin.testbench.unit.SpringUIUnit4Test;
 public class ReportDetailsSeparateLayoutTest extends SpringUIUnit4Test {
 
     @Test
+    @WithMockUser(username = "admin", password="admin")
     public void createReportsView() {
         Reporter admin = new Reporter();
         admin.setName("admin");

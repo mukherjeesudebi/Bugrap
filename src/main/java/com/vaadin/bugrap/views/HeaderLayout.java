@@ -6,17 +6,14 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.vaadin.bugrap.domain.entities.Project;
 
 import com.vaadin.bugrap.dao.ProjectDao;
-import com.vaadin.bugrap.security.AuthenticatedUserImpl;
-import com.vaadin.bugrap.security.SecurityService;
+import com.vaadin.bugrap.security.AuthenticatedUser;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.themes.LumoLightTheme;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.select.SelectVariant;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
@@ -29,16 +26,13 @@ public class HeaderLayout extends HorizontalLayout {
 
     private BodyLayout bodyLayout;
     private ReportDetailsLayout reportDetailsLayout;
-    private SecurityService securityService;
-    private AuthenticatedUserImpl authenticatedUserImpl;
+    private AuthenticatedUser authenticatedUserImpl;
 
     public HeaderLayout(ProjectDao projectDao,
             ProjectVersionService projectVersionService,
-            SecurityService securityService,
-            AuthenticatedUserImpl authenticatedUserImpl) {
+            AuthenticatedUser authenticatedUserImpl) {
         this.projectDao = projectDao;
         this.projectVersionService = projectVersionService;
-        this.securityService = securityService;
         this.authenticatedUserImpl = authenticatedUserImpl;
         createHeader();
     }

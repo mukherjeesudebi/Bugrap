@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ import org.vaadin.bugrap.domain.entities.Reporter;
 
 import com.vaadin.bugrap.dao.CommentDao;
 import com.vaadin.bugrap.dao.ReporterDao;
-import com.vaadin.bugrap.security.SecurityService;
+import com.vaadin.bugrap.security.AuthenticatedUser;
 import com.vaadin.bugrap.service.ProjectVersionService;
 import com.vaadin.bugrap.service.ReportService;
 import com.vaadin.flow.component.Html;
@@ -67,22 +66,22 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
     private ReportService reportService;
     private CommentDao commentDao;
     private RichTextEditor richTextEditor;
-    private SecurityService securityService;
     private VerticalLayout commentLayout;
     private VerticalLayout reportDetailsLayout;
 
+    private AuthenticatedUser authenticatedUserImpl;
+
     public ReportDetailsSeparateLayout(ReporterDao reporterDao,
             ProjectVersionService projectVersionService,
-            ReportService reportService, CommentDao commentDao,
-            SecurityService securityService) {
+            ReportService reportService, CommentDao commentDao,AuthenticatedUser authenticatedUserImpl) {
         this.reporterDao = reporterDao;
         this.projectVersionService = projectVersionService;
         this.reportService = reportService;
         reportBinder = new Binder<>(Report.class);
         this.commentDao = commentDao;
-        this.securityService = securityService;
         addClassName(LumoUtility.Padding.NONE);
         commentLayout = new VerticalLayout();
+        this.authenticatedUserImpl = authenticatedUserImpl;
     }
 
     @Override
@@ -312,8 +311,9 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
                         .entrySet()) {
                     HorizontalLayout singleCommentLayout = new HorizontalLayout();
                     singleCommentLayout.setWidthFull();
-                    singleCommentLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-                    
+                    singleCommentLayout
+                            .setJustifyContentMode(JustifyContentMode.BETWEEN);
+
                     Div commentString = new Div();
                     commentString.setWidth("75%");
                     commentString.setClassName(LumoUtility.Padding.MEDIUM);
@@ -450,7 +450,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
             attachment.setAttachmentName(fileName);
             attachment.setReport(report);
             attachment.setTimestamp(timestamp);
-            attachment.setAuthor(securityService.getAuthenticatedUser());
+            attachment.setAuthor(authenticatedUserImpl.get().get());
             try {
                 attachment.setAttachment(
                         buffer.getInputStream(fileName).readAllBytes());
@@ -467,7 +467,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
             comment.setReport(report);
             comment.setTimestamp(timestamp);
             comment.setComment(richTextEditor.getHtmlValue());
-            comment.setAuthor(securityService.getAuthenticatedUser());
+            comment.setAuthor(authenticatedUserImpl.get().get());
             commentDao.saveComment(comment);
         }
 
