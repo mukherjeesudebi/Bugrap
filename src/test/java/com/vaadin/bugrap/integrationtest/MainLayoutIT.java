@@ -1,5 +1,7 @@
 package com.vaadin.bugrap.integrationtest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.Test;
 import org.openqa.selenium.NotFoundException;
 
@@ -33,17 +35,14 @@ public class MainLayoutIT extends BugrapITTest {
         $(SelectElement.class).id("assignedToSelect").selectByText("developer");
         $(SelectElement.class).id("reportprojectVersionSelect")
                 .selectByText("Version 2");
-        Thread.sleep(2000);
 
         $(ButtonElement.class).id("saveChangesButton").click();
-        Thread.sleep(2000);
-        
-        $(SelectElement.class).id("projectVersionsSelect").selectByText("Version 1");
-        
-        Thread.sleep(2000);
-        
+       
+        assertEquals("Version 2",grid.getCell(0, 1).getText());
+        assertEquals("BUG",grid.getCell(0, 3).getText());
+        assertEquals("developer",grid.getCell(0, 5).getText());
+              
         $(SelectElement.class).id("projectVersionsSelect").selectByText("Version 2");
-        
-        Thread.sleep(2000);
+        assertEquals(2,grid.getRowCount());        
     }
 }
