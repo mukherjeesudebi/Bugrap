@@ -51,7 +51,6 @@ public class MainLayout extends SplitLayout {
         this.reporterDao = reporterDao;
         this.authenticatedUserImpl = authenticatedUserImpl;
         this.commentDao = commentDao;
-
         verticalLayout = new VerticalLayout();
         verticalLayout.addClassName(LumoUtility.Padding.NONE);
         reportDetailsLayout = new ReportDetailsLayout(this.reporterDao,

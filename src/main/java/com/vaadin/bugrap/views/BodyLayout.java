@@ -40,7 +40,8 @@ public class BodyLayout extends VerticalLayout {
 
     private ReportDetailsLayout reportDetailsLayout;
     private DistributionBar distributionBar = new DistributionBar();
-    VerticalLayout reportingBlockLayout;
+    private VerticalLayout reportingBlockLayout;
+    private ReportBugDialog reportBugDialog;
 
     public BodyLayout(ProjectVersionService projectVersionService,
             ReportService reportService, Project selectedProject) {
@@ -62,9 +63,12 @@ public class BodyLayout extends VerticalLayout {
     public void addFunctionAndSearch() {
         HorizontalLayout functionAnsSearchLayout = new HorizontalLayout();
         HorizontalLayout functionButtonsLayout = new HorizontalLayout();
+        reportBugDialog = new ReportBugDialog(selectedProject, projectVersionService);
         Button bugButton = new Button("Report a bug", new Icon(VaadinIcon.BUG));
         bugButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
+        bugButton.addClickListener(event -> {
+            reportBugDialog.open();
+        });
         Button failureRequestButton = new Button("Request a feature",
                 new Icon(VaadinIcon.LIGHTBULB));
         failureRequestButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -73,7 +77,7 @@ public class BodyLayout extends VerticalLayout {
                 new Icon(VaadinIcon.SUN_O));
         manageProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        functionButtonsLayout.add(bugButton, failureRequestButton,
+        functionButtonsLayout.add(reportBugDialog,bugButton, failureRequestButton,
                 manageProjectButton);
 
         TextField textField = new TextField();
@@ -222,7 +226,7 @@ public class BodyLayout extends VerticalLayout {
                 .setUnAssigned(reportService.getUnassignedCount(reportsList));
         distributionBar
                 .setUnResolved(reportService.getUnResolvedCount(reportsList));
-       // distributionBar.setWidthLayout();
+        // distributionBar.setWidthLayout();
         grid.setItems(reportsList);
         System.out.println(reportsList.get(0).getPriority());
     }
