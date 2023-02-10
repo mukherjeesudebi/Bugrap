@@ -22,26 +22,12 @@ public class ReportDetailsSeparateLayoutTest extends SpringUIUnit4Test {
     @Test
     @WithMockUser(username = "admin", password="admin")
     public void createReportsView() {
-        Reporter admin = new Reporter();
-        admin.setName("admin");
-        admin.setEmail("admin@bugrap.com");
-        admin.setConsistencyVersion(0);
-        admin.setAdmin(false);
-        admin.setId(1);
-
-        ProjectVersion projectVersion2 = new ProjectVersion();
-        projectVersion2.setVersion("Version 2");
-        projectVersion2.setClosed(false);
-        projectVersion2.setId(6);
-        projectVersion2.setConsistencyVersion(0);
-        projectVersion2.setReleaseDate(null);
-
         navigate(MainLayout.class);
         Grid<Report> grid = $(Grid.class).first();
         GridTester gridTester = test(grid);
 
         gridTester.select(0);
-        gridTester.select(0);
+        gridTester.select(1);
 
         test($(Select.class).withId("prioritySelect").first())
                 .selectItem("MAJOR");
@@ -59,9 +45,12 @@ public class ReportDetailsSeparateLayoutTest extends SpringUIUnit4Test {
         
 
         assertEquals("Version 2",gridTester.getCellText(0, 0));
-        //assertEquals("MAJOR",gridTester.getCellComponent(0, 1).getElement().getProperty("priority"));
         assertEquals("BUG",gridTester.getCellText(0, 2));
         assertEquals("developer",gridTester.getCellText(0, 4));
+        
+        assertEquals("Version 2",gridTester.getCellText(1, 0));
+        assertEquals("BUG",gridTester.getCellText(1, 2));
+        assertEquals("developer",gridTester.getCellText(1, 4));
 
     }
 }

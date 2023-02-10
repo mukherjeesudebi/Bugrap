@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.bugrap.domain.entities.Reporter;
 
+import com.vaadin.bugrap.dao.CommentDao;
+import com.vaadin.bugrap.dao.MockCommentDaoImpl;
 import com.vaadin.bugrap.dao.MockProjectDaoImpl;
 import com.vaadin.bugrap.dao.MockReporterDaoImpl;
 import com.vaadin.bugrap.dao.ProjectDao;
@@ -40,6 +42,11 @@ public class TestViewSecurityConfig {
     @Bean
     ReporterDao getReporterDao() {
         return new MockReporterDaoImpl();
+    }
+    
+    @Bean
+    CommentDao getCommentDao() {
+        return new MockCommentDaoImpl();
     }
 
     @Bean

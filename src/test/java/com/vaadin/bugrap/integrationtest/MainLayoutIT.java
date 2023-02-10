@@ -43,6 +43,7 @@ public class MainLayoutIT extends BugrapITTest {
         assertEquals("developer",grid.getCell(0, 5).getText());
               
         $(SelectElement.class).id("projectVersionsSelect").selectByText("Version 2");
+        
         assertEquals(2,grid.getRowCount());        
     }
 }

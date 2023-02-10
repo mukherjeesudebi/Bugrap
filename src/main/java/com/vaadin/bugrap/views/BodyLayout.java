@@ -65,7 +65,7 @@ public class BodyLayout extends VerticalLayout {
         Button bugButton = new Button("Report a bug", new Icon(VaadinIcon.BUG));
         bugButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        Button failureRequestButton = new Button("Request a failure",
+        Button failureRequestButton = new Button("Request a feature",
                 new Icon(VaadinIcon.LIGHTBULB));
         failureRequestButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 

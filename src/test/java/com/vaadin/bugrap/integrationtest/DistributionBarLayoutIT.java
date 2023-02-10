@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.openqa.selenium.NotFoundException;
 
 import com.vaadin.bugrap.DistributionBarElement;
+import com.vaadin.bugrap.views.DistributionBarLayout;
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.textfield.testbench.TextFieldElement;
 
@@ -28,16 +29,18 @@ public class DistributionBarLayoutIT extends BugrapITTest {
 
     @Test
     public void test() throws InterruptedException {
+        $(ButtonElement.class).id("testButton").click();
+        
         distributionBarElement = $(DistributionBarElement.class).first();
 
         $(TextFieldElement.class).id("closedCount").setValue("10");
         $(TextFieldElement.class).id("unAssignedCount").setValue("50");
         $(TextFieldElement.class).id("unResolvedCount").setValue("5");
 
-        Thread.sleep(500);
+     
         $(ButtonElement.class).id("updateCountsButtons").click();
 
-        Thread.sleep(1000);
+       
 
         assertEquals(10, ((Long) distributionBarElement.getProperty("closed"))
                 .intValue());
@@ -54,9 +57,9 @@ public class DistributionBarLayoutIT extends BugrapITTest {
         $(TextFieldElement.class).id("unAssignedCount").setValue("8");
         $(TextFieldElement.class).id("unResolvedCount").setValue("1");
 
-        Thread.sleep(500);
+       
         $(ButtonElement.class).id("updateCountsButtons").click();
-        Thread.sleep(1000);
+       
 
         assertEquals(3, ((Long) distributionBarElement.getProperty("closed"))
                 .intValue());

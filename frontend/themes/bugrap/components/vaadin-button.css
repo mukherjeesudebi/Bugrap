@@ -15,7 +15,7 @@
 }
 
 :host([theme~="bugrap-button-link"]){
-	background-color: white;	
+	background-color: transparent;	
     cursor: pointer;
     color: #414fbc;
 }

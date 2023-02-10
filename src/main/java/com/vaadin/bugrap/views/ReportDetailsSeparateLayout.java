@@ -114,6 +114,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
         projectNameAndVersion.add(projectName, projectVersion);
         projectNameAndVersion.setWidthFull();
         projectNameAndVersion.addClassName(LumoUtility.BoxShadow.SMALL);
+        projectNameAndVersion.addClassName("vaadin-header");
         add(projectNameAndVersion);
 
         reportDetailsLayout.addClassName(LumoUtility.Padding.NONE);
@@ -265,7 +266,7 @@ public class ReportDetailsSeparateLayout extends VerticalLayout
 
         attachmentsLayout.add(helperText);
         attachmentsLayout.add(upload);
-        attachmentsLayout.setWidth("26%");
+        attachmentsLayout.setWidth("30%");
 
         /*
          * upload.addSucceededListener(event -> { String fileName =
