@@ -58,7 +58,7 @@ public class ReportDetailsLayout extends VerticalLayout {
     private Grid<Report> grid;
     private GridDataView<Report> gridDataView;
     private Binder<Report> reportBinder;
-    private H6 reportSummary;
+    private Div reportSummary;
     private Select<Priority> prioritySelect;
     private Select<Type> typeSelect;
     private Select<Status> statusSelect;
@@ -155,7 +155,7 @@ public class ReportDetailsLayout extends VerticalLayout {
     public void createReportDetails() {
         HorizontalLayout summaryWithOpen = new HorizontalLayout();
         summaryWithOpen.setWidthFull();
-        reportSummary = new H6();
+        reportSummary = new Div();
         openButton = new Button("Open", new Icon(VaadinIcon.EXTERNAL_LINK));
         openButton.addThemeName("bugrap-button-link");
         openButton.addClickListener(e -> {

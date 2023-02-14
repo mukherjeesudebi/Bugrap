@@ -1,8 +1,9 @@
 /* Import your application global css files here or add the styles directly to this file */
 html {
-	/*--lumo-primary-text-color: brown;*/ 
-	-lumo-font-family: montserrat; 
-	-lumo-primary-color: #4b5bd6;
+	/*--lumo-primary-text-color: brown;*/
+	--lumo-font-family: montserrat;
+	--lumo-primary-color: #4b5bd6; 
+	--lumo-header-text-color: white;
 }
 
 .bugrapUserIcon {
@@ -44,15 +45,12 @@ html {
 	padding: 10px 20px;
 }
 
-.commentLayout{
+.commentLayout {
 	background-color: white;
 	border: 1px solid #d6d4d4;
 }
 
-#outlet{
+#outlet {
 	background-color: #f0f0f0;
 }
 
-.vaadin-header{
-  background-color: white;
-}

@@ -1,0 +1,9 @@
+[part="header"]{
+	background-color: #4b5bd6;
+}
+
+[part="content"]{
+	padding-top: 20px !important;
+	border: 1px solid #edebeb;
+    margin: 20px;
+}

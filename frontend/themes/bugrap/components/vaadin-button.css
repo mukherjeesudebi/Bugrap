@@ -17,5 +17,11 @@
 :host([theme~="bugrap-button-link"]){
 	background-color: transparent;	
     cursor: pointer;
-    color: #414fbc;
+    color:#414fbc;
+}
+
+:host([theme~="bugrap--modal-close-link"]){
+	background-color: transparent;	
+    cursor: pointer;
+    color:white;
 }

@@ -63,21 +63,35 @@ public class BodyLayout extends VerticalLayout {
     public void addFunctionAndSearch() {
         HorizontalLayout functionAnsSearchLayout = new HorizontalLayout();
         HorizontalLayout functionButtonsLayout = new HorizontalLayout();
-        reportBugDialog = new ReportBugDialog(selectedProject, projectVersionService);
+        reportBugDialog = new ReportBugDialog(this.selectedProject, projectVersionService,reportService, Report.Type.BUG);
         Button bugButton = new Button("Report a bug", new Icon(VaadinIcon.BUG));
         bugButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         bugButton.addClickListener(event -> {
+            if(reportBugDialog!=null) {
+                functionButtonsLayout.remove(reportBugDialog);
+            }
+            reportBugDialog = new ReportBugDialog(this.selectedProject, projectVersionService,reportService, Report.Type.BUG);
+            functionButtonsLayout.add(reportBugDialog);
             reportBugDialog.open();
         });
-        Button failureRequestButton = new Button("Request a feature",
+        Button featureRequestButton = new Button("Request a feature",
                 new Icon(VaadinIcon.LIGHTBULB));
-        failureRequestButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        featureRequestButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        
+        featureRequestButton.addClickListener(event -> {
+            if(reportBugDialog!=null) {
+                functionButtonsLayout.remove(reportBugDialog);
+            }
+            reportBugDialog = new ReportBugDialog(this.selectedProject, projectVersionService,reportService, Report.Type.FEATURE);
+            functionButtonsLayout.add(reportBugDialog);
+            reportBugDialog.open();
+        });
 
         Button manageProjectButton = new Button("Manage Project",
                 new Icon(VaadinIcon.SUN_O));
         manageProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        functionButtonsLayout.add(reportBugDialog,bugButton, failureRequestButton,
+        functionButtonsLayout.add(reportBugDialog,bugButton, featureRequestButton,
                 manageProjectButton);
 
         TextField textField = new TextField();
